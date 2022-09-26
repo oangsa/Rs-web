@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { WebhookClient } = require("discord.js")
-const PORT = 3000   
+const PORT = 3000 || process.env.PORT
 const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 
 wh = new WebhookClient({
@@ -134,6 +134,6 @@ app.post("/", function(req,res) {
 })
 
 
-app.listen(process.env.PORT || PORT , function() {
+app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
 })
