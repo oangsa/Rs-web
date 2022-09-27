@@ -83,23 +83,23 @@ app.post("/", async function(req,res) {
             return count;
           }
         const diff = getBusinessDatesCount(date_1, date_2);
-        if (diff == 0) {
-            error_msg = "คุณไม่สามารถลาวันหยุดได้(weekend)!"
-            res.render('index', {
-                error: error_msg,
-                old_data: req.body
-            })
-        }
-        else if (name == "" || !reason || d == "Invalid Date"){
+        if (name == "" || !reason || d == "Invalid Date"){
             error_msg = "กรุณากรอกข้อมูลให้ครบ!"
             res.render('index', {
                 error: error_msg,
                 old_data: req.body
             })
-        } else {
+        } 
+        else if (diff == 0) {
+            error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
+            res.render('index', {
+                error: error_msg,
+                old_data: req.body
+            })
+        }
+        else {
             Note.findOne({"name":name}, function(err, result) {
                 if (!result) {
-                    console.log(isBeforeToday(new Date(req.body.fdate)))
                     if (isBeforeToday(new Date(req.body.fdate))) {
                         error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
                         res.render('index', {
