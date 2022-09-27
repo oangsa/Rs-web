@@ -62,7 +62,13 @@ app.post("/", async function(req,res) {
         else if (reason == "personal_activity") {
             var freason = "กิจกรรม"
         }
-
+        function isBeforeToday(date) {
+            const today = new Date();
+          
+            today.setHours(0, 0, 0, 0);
+          
+            return date < today;
+          }
         const getBusinessDatesCount = (startDate, endDate) => {
             let count = 0;
             let curDate = +startDate;
@@ -93,8 +99,8 @@ app.post("/", async function(req,res) {
         } else {
             Note.findOne({"name":name}, function(err, result) {
                 if (!result) {
-                    const currentDate = new Date();
-                    if (new Date(req.body.fdate).getTime() <= currentDate.getTime()) {
+                    console.log(isBeforeToday(new Date(req.body.fdate)))
+                    if (isBeforeToday(new Date(req.body.fdate))) {
                         error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
                         res.render('index', {
                             error: error_msg,
@@ -116,6 +122,11 @@ app.post("/", async function(req,res) {
                             embeds: [newEmbed]
                         })
                         newNote.save();
+                        succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                        res.render('index', {
+                            success: succ_msg,
+                            old_data: req.body
+                        })
                     }
                 } else {
                     Note.findOne({"name":name}, function(err, result) {
@@ -126,9 +137,8 @@ app.post("/", async function(req,res) {
                               break;
                             }
                         }
-                        const currentDate = new Date();
                         if (pass == true) {
-                            if (new Date(req.body.fdate).getTime() <= currentDate.getTime()) {
+                            if (isBeforeToday(new Date(req.body.fdate))) {
                                 error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
                                 res.render('index', {
                                     error: error_msg,
