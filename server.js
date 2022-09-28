@@ -14,11 +14,6 @@ wh = new WebhookClient({
     url: 'https://discord.com/api/webhooks/1014200734146904065/OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx'
 })
 
-udwh = new WebhookClient({
-    token: '7RmhzPthzlI-7tb6ZIW0AW4cO2AnOIxVLbHItKyMZR9Z89AsMbWr10-Uvtt6BAFy-qfu',
-    id: '1014912338710761482',
-    url: 'https://discord.com/api/webhooks/1014912338710761482/7RmhzPthzlI-7tb6ZIW0AW4cO2AnOIxVLbHItKyMZR9Z89AsMbWr10-Uvtt6BAFy-qfu'
-})
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
@@ -41,6 +36,7 @@ app.get("/", function(req,res,next) {
 app.post("/", async function(req,res) {
         const name = req.body.name
         const reason = req.body.reason
+        const half = req.body.half_day
         const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
         const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
         let fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
@@ -61,7 +57,14 @@ app.post("/", async function(req,res) {
         }
         else if (reason == "personal_activity") {
             var freason = "กิจกรรม"
-        }
+        } else return;
+
+        var day = d
+
+        if (half) {
+            var day = `${d}(${half})`
+        } else return;
+        
         function isBeforeToday(date) {
             const today = new Date();
           
@@ -112,20 +115,24 @@ app.post("/", async function(req,res) {
                             total_days: diff,
                             dates: THdate_1
                         })
-                        const newEmbed = {
-                            title: `Created New Data`,
-                            description: `\`\`\`ini\nSuccessfully created data for ${name}\`\`\``,
-                            color: 0x2ECC71
-                        };
-                        udwh.send({
-                            username: "log",
-                            embeds: [newEmbed]
-                        })
                         newNote.save();
                         succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
                         res.render('index', {
                             success: succ_msg,
                             old_data: req.body
+                        })
+                        lineNotify.notify({
+                            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                        })
+                        const logEmbed = {
+                            title: name,
+                            description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                            color: 0x99CCFF
+                        };
+                    
+                        wh.send({
+                            username: "log",
+                            embeds: [logEmbed]
                         })
                     }
                 } else {
@@ -150,19 +157,24 @@ app.post("/", async function(req,res) {
                                     if (err){
                                         console.log(err)
                                     } else {
-                                        const updateEmbed = {
-                                            title: `Data Changed`,
-                                            description: `\`\`\`ini\nData updated for ${name}\n ⤷ ${(result["total_days"])} >> ${(result["total_days"] + diff)}\`\`\``,
-                                            color: 0xAF7AC5
-                                        };
-                                        udwh.send({
-                                            username: "log",
-                                            embeds: [updateEmbed]
-                                        })
                                         succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
                                         res.render('index', {
                                             success: succ_msg,
                                             old_data: req.body
+                                        })
+                                        const logEmbed = {
+                                            title: name,
+                                            description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                                            color: 0x99CCFF
+                                        };
+                                    
+                                        wh.send({
+                                            username: "log",
+                                            embeds: [logEmbed]
+                                        })
+                            
+                                        lineNotify.notify({
+                                            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
                                         })
                                     }
                                 });
@@ -178,24 +190,9 @@ app.post("/", async function(req,res) {
                     })
                 }
             })
-            const logEmbed = {
-                title: name,
-                description: `\`\`\`ini\nDate\n ⤷ ${d}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
-                color: 0x99CCFF
-            };
-        
-            wh.send({
-                username: "log",
-                embeds: [logEmbed]
-            })
-
-            lineNotify.notify({
-                message: `\nชื่อ: ${name}\nลาวันที่: ${d}\nเนื่องจาก: ${freason}`,
-            })
         }
     }
 )
-
 
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
