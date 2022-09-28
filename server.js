@@ -2,17 +2,17 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const { WebhookClient } = require("discord.js")
+// const { WebhookClient } = require("discord.js")
 const PORT = 3000 || process.env.PORT
 const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 const path = require("path");
 mongoose.connect("mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority", {useNewUrlParser: true}, {useUnifiedTopology: true})
 
-wh = new WebhookClient({
-    token: 'OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx',
-    id: '1014200734146904065',
-    url: 'https://discord.com/api/webhooks/1014200734146904065/OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx'
-})
+// wh = new WebhookClient({
+//     token: 'OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx',
+//     id: '1014200734146904065',
+//     url: 'https://discord.com/api/webhooks/1014200734146904065/OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx'
+// })
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -130,10 +130,10 @@ app.post("/", async function(req,res) {
                             color: 0x99CCFF
                         };
                     
-                        wh.send({
-                            username: "log",
-                            embeds: [logEmbed]
-                        })
+                        // wh.send({
+                        //     username: "log",
+                        //     embeds: [logEmbed]
+                        // })
                     }
                 } else {
                     Note.findOne({"name":name}, function(err, result) {
@@ -168,10 +168,10 @@ app.post("/", async function(req,res) {
                                             color: 0x99CCFF
                                         };
                                     
-                                        wh.send({
-                                            username: "log",
-                                            embeds: [logEmbed]
-                                        })
+                                        // wh.send({
+                                        //     username: "log",
+                                        //     embeds: [logEmbed]
+                                        // })
                             
                                         lineNotify.notify({
                                             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
