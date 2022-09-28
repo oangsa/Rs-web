@@ -6,14 +6,17 @@ const PORT = 3000 || process.env.PORT
 const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 const path = require("path");
 const axios = require("axios");
-mongoose.connect("mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority", {useNewUrlParser: true}, {useUnifiedTopology: true})
-
 const webhook_id = "1014200734146904065"
 const webhook_token = "OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx"
+
+mongoose.connect("mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority",{
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+})
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
 
 const notesSchema = {
     name: String,
@@ -82,14 +85,14 @@ app.post("/", async function(req,res) {
           }
         const diff = getBusinessDatesCount(date_1, date_2);
         if (name == "" || !reason || d == "Invalid Date"){
-            error_msg = "กรุณากรอกข้อมูลให้ครบ!"
+            const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
             res.render('index', {
                 error: error_msg,
                 old_data: req.body
             })
         } 
         else if (diff == 0) {
-            error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
+            const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
             res.render('index', {
                 error: error_msg,
                 old_data: req.body
@@ -99,7 +102,7 @@ app.post("/", async function(req,res) {
             Note.findOne({"name":name}, function(err, result) {
                 if (!result) {
                     if (isBeforeToday(new Date(req.body.fdate))) {
-                        error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
+                        const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
                         res.render('index', {
                             error: error_msg,
                             old_data: req.body
@@ -110,8 +113,13 @@ app.post("/", async function(req,res) {
                             total_days: diff,
                             dates: THdate_1
                         })
+                        const logEmbed = {
+                            title: name,
+                            description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                            color: 0x99CCFF
+                        };
+                        const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
                         newNote.save();
-                        succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
                         res.render('index', {
                             success: succ_msg,
                             old_data: req.body
@@ -119,13 +127,11 @@ app.post("/", async function(req,res) {
                         lineNotify.notify({
                             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
                         })
-                        const logEmbed = {
-                            title: name,
-                            description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
-                            color: 0x99CCFF
-                        };
-
-                        axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
+                        
+                        axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { 
+                            "embeds": [logEmbed], 
+                            "username":"log" 
+                        })
                     
                     }
                 } else {
@@ -139,7 +145,7 @@ app.post("/", async function(req,res) {
                         }
                         if (pass == true) {
                             if (isBeforeToday(new Date(req.body.fdate))) {
-                                error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
+                                const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
                                 res.render('index', {
                                     error: error_msg,
                                     old_data: req.body
@@ -150,16 +156,16 @@ app.post("/", async function(req,res) {
                                     if (err){
                                         console.log(err)
                                     } else {
-                                        succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
-                                        res.render('index', {
-                                            success: succ_msg,
-                                            old_data: req.body
-                                        })
                                         const logEmbed = {
                                             title: name,
                                             description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
                                             color: 0x99CCFF
                                         };
+                                        const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                                        res.render('index', {
+                                            success: succ_msg,
+                                            old_data: req.body
+                                        })
                                     
                                         axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
                                         
@@ -171,7 +177,7 @@ app.post("/", async function(req,res) {
                             }
                         }
                         if (pass == false) {
-                            error_msg = "คุณได้ทำการลาในวันนั้นไปแล้ว!"
+                            const error_msg = "คุณได้ทำการลาในวันนั้นไปแล้ว!"
                             res.render('index', {
                                 error: error_msg,
                                 old_data: req.body
