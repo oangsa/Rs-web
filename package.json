@@ -12,7 +12,6 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.0",
-    "discord.js": "^14.3.0",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "express-validator": "^6.14.2",
