@@ -57,13 +57,13 @@ app.post("/", async function(req,res) {
         }
         else if (reason == "personal_activity") {
             var freason = "กิจกรรม"
-        } else return;
+        }
 
         var day = d
 
         if (half) {
             var day = `${d}(${half})`
-        } else return;
+        }
         
         function isBeforeToday(date) {
             const today = new Date();
