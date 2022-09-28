@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-// const { WebhookClient } = require("discord.js")
 const PORT = 3000 || process.env.PORT
 const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 const path = require("path");
