@@ -26,13 +26,19 @@ const notesSchema = {
     ndates: Array
 }
 
-
-
 const Note = mongoose.model("RS", notesSchema)
 
 app.get("/", function(req,res,next) {
     res.render("index")
     next();
+})
+
+app.get("/table", function(req,res) {
+    Note.find({}, function(err, user){
+        res.render("table",{
+            dataLists: user
+        })
+    })
 })
 
 app.post("/", async function(req,res) {
@@ -243,6 +249,8 @@ app.post("/", async function(req,res) {
         }
     }
 )
+
+
 
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)

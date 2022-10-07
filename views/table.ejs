@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+</head>
+<body style="background-color: lightblue; padding: 3rem 0rem 3rem;">
+    <div class="container mt-5" style="font-family: 'Itim'; background-color: white ;border-radius: 0.5rem; width: 100%; padding: 20px;">
+        <table style="font-family: 'Itim'; width: 100%;" class="table table-striped" id="myTable">
+            <thead>
+              <tr>
+                <th scope="col">เลขที่</th>
+                <th scope="col">ชื่อ-นามสกุล</th>
+                <th scope="col">จำนวนวันที่ลา</th>
+                <th scope="col">วันที่ลา</th>
+              </tr>
+            </thead>
+            <tbody>
+                <%dataLists.forEach(user => {%>
+                    <tr>
+                        <th scope="row"><%= user.class_num %></th>
+                        <td><%= user.name %></td>
+                        <td><%= user.total_days %></td>
+                        <td><%= user.dates %></td>
+                    </tr>
+                <%})%>
+            </tbody>
+        </table>
+        <div>
+            <form id="goback" method="GET" action="/">
+                <button class="btn btn-danger" >กลับหน้าหลัก</button>
+            </form>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready( function () {
+            $('#myTable').DataTable();
+        } );
+    </script>
+</body>
+<p>
+    <footer style="font-family: 'Itim'">
+      <div class="text-center p-3" style="background-color: rgba(255, 255, 255, 0.795); padding:1rem 1rem 1rem; border-radius: 0.5rem;">
+        Developed By:
+        <label class="text-dark">Suthang Sukrueangkun</label><p></p>
+        <label class="text-dark">Class: S. 5/5 Ratchasima Witthayalai School</label>
+      </div>
+    </footer>
+  </p>
+</html>
+
