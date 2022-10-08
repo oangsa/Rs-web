@@ -8,6 +8,7 @@ const path = require("path");
 const axios = require("axios");
 const webhook_id = "1014200734146904065"
 const webhook_token = "OXGg2D3-PHWTAgJsUM5DDyB3LGP2zWxLMzOuFyVcddEPepHKoMS2evi0r81IqujneaFx"
+const compareWeek = require('compare-week');
 
 mongoose.connect("mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority",{
     useUnifiedTopology: true,
@@ -22,7 +23,10 @@ const notesSchema = {
     name: String,
     class_num: String,
     total_days: Number,
-    dates: Array,
+    week_days: Number,
+    allDates: Array,
+    weekDates: Array,
+    nweekDate: Array,
     ndates: Array
 }
 
@@ -113,11 +117,10 @@ app.post("/", async function(req,res) {
             "สรยุทธ ช่างเหล็ก":"44",
         }
 
-
-
         var day = d
-
-        if (half) {
+        if (half == "ทั้งวัน") {
+            var day = d
+        } else if (half == "ครึ่งเช้า" || half == "ครึ่งบ่าย") {
             var day = `${d}(${half})`
         }
         
@@ -142,6 +145,7 @@ app.post("/", async function(req,res) {
             return count;
           }
         const diff = getBusinessDatesCount(date_1, date_2);
+        const check_week = compareWeek(new Date(), new Date(req.body.fdate))
         if (name == "" || !reason || d == "Invalid Date"){
             const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
             res.render('index', {
@@ -151,6 +155,13 @@ app.post("/", async function(req,res) {
         } 
         else if (diff == 0) {
             const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
+            res.render('index', {
+                error: error_msg,
+                old_data: req.body
+            })
+        }
+        else if (!check_week){
+            const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
             res.render('index', {
                 error: error_msg,
                 old_data: req.body
@@ -170,8 +181,11 @@ app.post("/", async function(req,res) {
                             name: name,
                             class_num: dic[name],
                             total_days: diff,
-                            dates: THdate_1,
-                            ndates: req.body.fdate
+                            week_days: diff,
+                            allDates: THdate_1,
+                            weekDates: THdate_1,
+                            ndates: req.body.fdate,
+                            nweekDate: req.body.fdate
                         })
                         const logEmbed = {
                             title: name,
@@ -196,23 +210,50 @@ app.post("/", async function(req,res) {
                     }
                 } else {
                     Note.findOne({"name":name}, function(err, result) {
+                        const comweek = compareWeek(new Date(result["nweekDate"][0]), new Date(req.body.fdate))
                         let pass = true
-                        for (var i = 0, ln = result["dates"].length; i < ln; i++) {
-                            if (THdate_1.indexOf(result["dates"][i]) !== -1) {
+                        for (var i = 0, ln = result["allDates"].length; i < ln; i++) {
+                            if (THdate_1.indexOf(result["allDates"][i]) !== -1) {
                               pass = false;
                               break;
                             }
                         }
                         if (pass == true) {
-                            if (isBeforeToday(new Date(req.body.fdate))) {
-                                const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
-                                res.render('index', {
-                                    error: error_msg,
-                                    old_data: req.body
-                                })
+                            if(!comweek){
+                                if (isBeforeToday(new Date(req.body.fdate))) {
+                                    const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
+                                    res.render('index', {
+                                        error: error_msg,
+                                        old_data: req.body
+                                    })
+                                } else {
+                                    Note.updateOne({"name":name},
+                                    {total_days:(result["total_days"] + diff), $push: { "allDates": THdate_1, "ndates": req.body.fdate },$set: {"weekDates":[THdate_1],"nweekDate":[req.body.fdate], "week_days":diff}}, function(err,result){
+                                        if (err){
+                                            console.log(err)
+                                        } else {
+                                            const logEmbed = {
+                                                title: name,
+                                                description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                                                color: 0x99CCFF
+                                            };
+                                            const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                                            res.render('index', {
+                                                success: succ_msg,
+                                                old_data: req.body
+                                            })
+                                        
+                                            axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
+                                            
+                                            lineNotify.notify({
+                                                message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                                            })
+                                        }
+                                    })
+                                }
                             } else {
-                                Note.updateOne({"name":name}, 
-                                {total_days:(result["total_days"] + diff), $push: { "dates": THdate_1, "ndates": req.body.fdate }}, function (err, docs) {
+                                Note.updateOne({"name":name},
+                                {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(result,err){
                                     if (err){
                                         console.log(err)
                                     } else {
@@ -233,7 +274,7 @@ app.post("/", async function(req,res) {
                                             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
                                         })
                                     }
-                                });
+                                })
                             }
                         }
                         if (pass == false) {
