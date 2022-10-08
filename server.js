@@ -33,7 +33,7 @@ app.get("/", function(req,res,next) {
     next();
 })
 
-app.get("/table", function(req,res) {
+app.get("/data_table", function(req,res) {
     Note.find({}, function(err, user){
         res.render("table",{
             dataLists: user
@@ -249,7 +249,6 @@ app.post("/", async function(req,res) {
         }
     }
 )
-
 
 
 app.listen(PORT , function() {
