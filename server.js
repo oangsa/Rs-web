@@ -241,7 +241,7 @@ app.post("/", async function(req,res) {
                                             res.render('index', {
                                                 success: succ_msg,
                                                 old_data: req.body
-                                            }).then(console.log("Success!"))
+                                            })
                                         
                                             axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
                                             
@@ -266,7 +266,7 @@ app.post("/", async function(req,res) {
                                         res.render('index', {
                                             success: succ_msg,
                                             old_data: req.body
-                                        }).then(console.log("Success!"))
+                                        })
                                     
                                         axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
                                         
