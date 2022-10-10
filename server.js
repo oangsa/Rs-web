@@ -45,6 +45,14 @@ app.get("/data_table", function(req,res) {
     })
 })
 
+app.get("/rs-really-trash", function(req,res){
+    res.render("rstrash")
+})
+
+app.post("/rs-really-trash", function(req,res){
+    res.redirect("https://youtu.be/dQw4w9WgXcQ")
+})
+
 app.post("/", async function(req,res) {
         const name = req.body.name
         const reason = req.body.reason
@@ -291,6 +299,9 @@ app.post("/", async function(req,res) {
     }
 )
 
+app.use("/", (req, res) => {
+    res.status(404).send(res.render("err"))
+})
 
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
