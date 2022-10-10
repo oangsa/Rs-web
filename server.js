@@ -241,7 +241,7 @@ app.post("/", async function(req,res) {
                                             res.render('index', {
                                                 success: succ_msg,
                                                 old_data: req.body
-                                            })
+                                            }).then(console.log("Success!"))
                                         
                                             axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
                                             
@@ -253,7 +253,7 @@ app.post("/", async function(req,res) {
                                 }
                             } else {
                                 Note.updateOne({"name":name},
-                                {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(result,err){
+                                {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
                                     if (err){
                                         console.log(err)
                                     } else {
@@ -266,7 +266,7 @@ app.post("/", async function(req,res) {
                                         res.render('index', {
                                             success: succ_msg,
                                             old_data: req.body
-                                        })
+                                        }).then(console.log("Success!"))
                                     
                                         axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
                                         
