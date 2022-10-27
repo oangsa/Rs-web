@@ -3,8 +3,9 @@ const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const PORT = 3000 || process.env.PORT
-// const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr'); ==> OLD 
-const lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
+// ==> OLD 
+const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
+// const lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 const path = require("path");
 const axios = require("axios");
 const webhook_id = "1014200734146904065"
@@ -139,7 +140,7 @@ app.post("/", async function(req,res) {
             today.setHours(0, 0, 0, 0);
           
             return date < today;
-          }
+        }
         const getBusinessDatesCount = (startDate, endDate) => {
             let count = 0;
             let curDate = +startDate;
@@ -176,47 +177,45 @@ app.post("/", async function(req,res) {
                 old_data: req.body
             })
         }
+        else if (isBeforeToday(new Date(req.body.fdate))) {
+            const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
+            res.render('index', {
+                error: error_msg,
+                old_data: req.body
+            })
+        }
         else {
             Note.findOne({"name":name}, function(err, result) {
                 if (!result) {
-                    if (isBeforeToday(new Date(req.body.fdate))) {
-                        const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
-                        res.render('index', {
-                            error: error_msg,
-                            old_data: req.body
-                        })
-                    } else {
-                        let newNote = new Note({
-                            name: name,
-                            class_num: dic[name],
-                            total_days: diff,
-                            week_days: diff,
-                            allDates: THdate_1,
-                            weekDates: THdate_1,
-                            ndates: req.body.fdate,
-                            nweekDate: req.body.fdate
-                        })
-                        const logEmbed = {
-                            title: name,
-                            description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
-                            color: 0x99CCFF
-                        };
-                        const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
-                        newNote.save();
-                        res.render('index', {
-                            success: succ_msg,
-                            old_data: req.body
-                        })
-                        lineNotify.notify({
-                            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
-                        })
-                        
-                        axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { 
-                            "embeds": [logEmbed], 
-                            "username":"log" 
-                        })
+                    let newNote = new Note({
+                        name: name,
+                        class_num: dic[name],
+                        total_days: diff,
+                        week_days: diff,
+                        allDates: THdate_1,
+                        weekDates: THdate_1,
+                        ndates: req.body.fdate,
+                        nweekDate: req.body.fdate
+                    })
+                    const logEmbed = {
+                        title: name,
+                        description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                        color: 0x99CCFF
+                    };
+                    const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                    newNote.save();
+                    res.render('index', {
+                        success: succ_msg,
+                        old_data: req.body
+                    })
+                    lineNotify.notify({
+                        message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                    })
                     
-                    }
+                    axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { 
+                        "embeds": [logEmbed], 
+                        "username":"log" 
+                    })
                 } else {
                     Note.findOne({"name":name}, function(err, result) {
                         const comweek = compareWeek(new Date(result["nweekDate"][0]), new Date(req.body.fdate))
@@ -231,41 +230,33 @@ app.post("/", async function(req,res) {
                         console.log(`Compweek ${comweek}`)
                         if (pass == true) {
                             if(!comweek){
-                                if (isBeforeToday(new Date(req.body.fdate))) {
-                                    const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
-                                    res.render('index', {
-                                        error: error_msg,
-                                        old_data: req.body
-                                    })
-                                } else {
                                     Note.updateMany({},
                                     {$set: {"weekDates":[],"nweekDate":[], "week_days":0}}, function(err,results){
-                                        console.log(results)
-                                        if (err){
-                                            console.log(err)
-                                        } else {
-                                            Note.updateOne({"name":name},
-                                            {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
-                                                const logEmbed = {
-                                                    title: name,
-                                                    description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
-                                                    color: 0x99CCFF
-                                                };
-                                                const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
-                                                res.render('index', {
-                                                    success: succ_msg,
-                                                    old_data: req.body
-                                                })
-                                            
-                                                axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
-                                                
-                                                lineNotify.notify({
-                                                    message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
-                                                })
+                                    console.log(results)
+                                    if (err){
+                                        console.log(err)
+                                    } else {
+                                        Note.updateOne({"name":name},
+                                        {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
+                                            const logEmbed = {
+                                                title: name,
+                                                description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                                                color: 0x99CCFF
+                                            };
+                                            const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                                            res.render('index', {
+                                                success: succ_msg,
+                                                old_data: req.body
                                             })
-                                        }
-                                    })
-                                }
+                                        
+                                            axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
+                                            
+                                            lineNotify.notify({
+                                                message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                                            })
+                                        })
+                                    }
+                                })
                             } else {
                                 Note.updateOne({"name":name},
                                 {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
