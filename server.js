@@ -226,6 +226,8 @@ app.post("/", async function(req,res) {
                               break;
                             }
                         }
+                        console.log(`Pass ${pass}`)
+                        console.log(`Compweek ${comweek}`)
                         if (pass == true) {
                             if(!comweek){
                                 if (isBeforeToday(new Date(req.body.fdate))) {
@@ -235,26 +237,30 @@ app.post("/", async function(req,res) {
                                         old_data: req.body
                                     })
                                 } else {
-                                    Note.updateOne({"name":name},
-                                    {total_days:(result["total_days"] + diff), $push: { "allDates": THdate_1, "ndates": req.body.fdate },$set: {"weekDates":[THdate_1],"nweekDate":[req.body.fdate], "week_days":diff}}, function(err,result){
+                                    Note.updateMany({},
+                                    {$set: {"weekDates":[],"nweekDate":[], "week_days":0}}, function(err,results){
+                                        console.log(results)
                                         if (err){
                                             console.log(err)
                                         } else {
-                                            const logEmbed = {
-                                                title: name,
-                                                description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
-                                                color: 0x99CCFF
-                                            };
-                                            const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
-                                            res.render('index', {
-                                                success: succ_msg,
-                                                old_data: req.body
-                                            })
-                                        
-                                            axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
+                                            Note.updateOne({"name":name},
+                                            {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
+                                                const logEmbed = {
+                                                    title: name,
+                                                    description: `\`\`\`ini\nDate\n ⤷ ${day}\nReason\n ⤷ ${freason}\nDate Count\n ⤷ ${diff}\`\`\``,
+                                                    color: 0x99CCFF
+                                                };
+                                                const succ_msg = "ระบบบันทึกข้อมูลเรียบร้อย!"
+                                                res.render('index', {
+                                                    success: succ_msg,
+                                                    old_data: req.body
+                                                })
                                             
-                                            lineNotify.notify({
-                                                message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                                                axios.post(`https://discordapp.com/api/webhooks/${webhook_id}/${webhook_token}`, { "embeds": [logEmbed], "username":"log" })
+                                                
+                                                lineNotify.notify({
+                                                    message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+                                                })
                                             })
                                         }
                                     })
