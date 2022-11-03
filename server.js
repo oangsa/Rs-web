@@ -4,9 +4,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const PORT = 3000 || process.env.PORT
 // ==> OLD 
-// const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
+const lineNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 // ==> NEW
-const lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
+// const lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 const path = require("path");
 const axios = require("axios");
 const webhook_id = "1014200734146904065"
@@ -100,14 +100,18 @@ app.post("/rs-really-trash", function(req,res){
 app.post("/", async function(req,res) {
     const name = req.body.name
     const reason = req.body.reason
-    const half = req.body.half_day
+    const half = `(${(req.body.half_day)})` || ""
     const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
     const date_2 = date_1
-    const day = d || `${d}(${half})`
+    if (half == "()"){
+        var day = `${d}`
+    } else {
+        var day = `${d}${half}`
+    }
     const reasonDict = {
         "sick":"ป่วย",
         "covid":"ติดเชื้อโควิด-19",
