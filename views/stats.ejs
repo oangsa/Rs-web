@@ -16,9 +16,7 @@
               <tr>
                 <th scope="col">เลขที่</th>
                 <th scope="col">ชื่อ-นามสกุล</th>
-                <th scope="col">จำนวนวันที่ลาทั้งหมด</th>
-                <th scope="col">จำนวนวันที่ลาในสัปดาห์</th>
-                <th scope="col">วันที่ลาในสัปดาห์</th>
+                <th scope="col">status</th>
               </tr>
             </thead>
             <tbody>
@@ -26,9 +24,7 @@
                     <tr>
                         <th scope="row"><%= user.class_num %></th>
                         <td><%= user.name %></td>
-                        <td><%= user.total_days %></td>
-                        <td><%= user.week_days %></td>
-                        <td><%= user.weekDates %></td>
+                        <td><%= user.stats %></td>
                     </tr>
                 <%})%>
             </tbody>
@@ -83,7 +79,7 @@
           </div>
           <div class="text-center p-3" style="background-color: skyblue; padding:1rem 1rem 1rem; border-radius: 0.5rem;">
             © 2022 Copyright:
-            <a class="text-dark" href="https://tub5-rs119.onrender.com/">https://tub5-rs119.onrender.com/</a>
+            <a class="text-dark" href="https://tub5-rs119.onrender.com/">this site</a>
           </div>      
     </div>
   </footer>
