@@ -107,7 +107,7 @@ app.post("/", async function(req,res) {
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
     const date_2 = date_1
-    if (half == ""){
+    if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
     } else {
         var day = `${d}${half}`
