@@ -51,8 +51,10 @@ app.get("/data_table", function(req,res) {
 
 app.get("/stats", function(req,res) {
     const date = new Date().toLocaleDateString('TH-th')
+    console.log(date)
     Note.find({}, async function(err, user){
         await user.forEach(element => {
+            console.log(`${element.name}: ${element.allDates?.includes(date)}`)
             const comweek = compareWeek(new Date(element.nweekDate[0]), new Date())
             if (!comweek) {
                 Note.updateOne({name:element.name}, {$set: {"weekDates":[],"nweekDate":[], "week_days":0} }, async (err, succ) => {
