@@ -115,10 +115,9 @@ app.post("/", async function(req,res) {
         var day = `${d}${half}`
     }
     const reasonDict = {
-        "sick":"ป่วย",
-        "covid":"ติดเชื้อโควิด-19",
-        "quarantine":"เสี่ยงสูง",
-        "parent_activity":"ไปธุระกับผปค.",
+        "sick":"ป่วย/ ติดเชื้อโควิด-19",
+        "quarantine":"เสี่ยงสูง/กักตัว",
+        "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":"กิจกรรม (รด./ อื่นๆ)",
     }
     const freason = reasonDict[reason]
