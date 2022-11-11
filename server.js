@@ -50,7 +50,7 @@ app.get("/data_table", function(req,res) {
 })
 
 app.get("/stats", function(req,res) {
-    const date = new Date().toLocaleDateString('en-US')
+    const date = new Date().toLocaleDateString('th-TH')
     console.log(date)
     Note.find({}, async function(err, user){
         await user.forEach(element => {
