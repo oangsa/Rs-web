@@ -17,6 +17,7 @@
                 <th scope="col">เลขที่</th>
                 <th scope="col">ชื่อ-นามสกุล</th>
                 <th scope="col">status</th>
+                <th scope="col">reason</th>
               </tr>
             </thead>
             <tbody>
@@ -25,6 +26,7 @@
                         <th scope="row"><%= user.class_num %></th>
                         <td><%= user.name %></td>
                         <td><%= user.stats %></td>
+                        <td><%= user.reason %></td>
                     </tr>
                 <%})%>
             </tbody>

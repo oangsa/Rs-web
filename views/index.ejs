@@ -87,6 +87,7 @@
           <option value="ครึ่งบ่าย">ครึ่งบ่าย</option>
         </select>
       </div><p></p>
+      <div style="color:red">*กรณีที่กิจกรรม "ไม่ใช่รด." ต้องกรอกกิจกรรมที่ไปด้วย*</div>
       <div class="form-label" required>
         สาเหตุการลา:
         <div>
@@ -104,6 +105,13 @@
       <div>
         <label class="form-check-label" for="personal_activity">กิจกรรม</label>
         <input class="form-check-input" type="radio" name="reason" id="personal_activity" value="personal_activity">
+      </div>
+      <div>
+        <label class="form-check-label" for="other">อื่นๆ</label>
+        <input class="form-check-input" type="radio" name="reason" id="other" value="other">
+      </div><p></p>
+      <div class="input-group">
+        <input class="form-control" type="text" name="other_reason" id="other_reason" placeholder="กรุณาระบุ...">
       </div>
     </div>
       <div><p></p>

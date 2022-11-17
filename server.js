@@ -31,7 +31,8 @@ const notesSchema = {
     weekDates: Array,
     nweekDate: Array,
     ndates: Array,
-    stats: String
+    stats: String,
+    reason: String
 }
 
 const Note = mongoose.model("RS", notesSchema)
@@ -50,7 +51,7 @@ app.get("/data_table", function(req,res) {
 })
 
 app.get("/stats", function(req,res) {
-    const date = new Date().toLocaleDateString('th-TH')
+    const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
     console.log(date)
     Note.find({}, async function(err, user){
         await user.forEach(element => {
@@ -61,13 +62,13 @@ app.get("/stats", function(req,res) {
                     if(err) return console.log(err)
                 })
             }
-            if (element?.stats == undefined) {
+            if (element?.stats == undefined || element?.reason == undefined) {
                 if (element.allDates?.includes(date)){
                     Note.updateOne({name:element.name}, {$set: {"stats": "❌"}}, async (err, succ) => {
                         if(err) return console.log(err)
                     })
                 } else {
-                    Note.updateOne({name:element.name}, {$set: {"stats": "✅"}}, async (err, succ) => {
+                    Note.updateOne({name:element.name}, {$set: {"stats": "✅", "reason":"-"}}, async (err, succ) => {
                         if(err) return console.log(err)
                     })
                 }
@@ -77,7 +78,7 @@ app.get("/stats", function(req,res) {
                         if(err) return console.log(err)
                     })
                 } else {
-                    Note.updateOne({name:element.name}, {$set: {"stats": "✅"}}, async (err, succ) => {
+                    Note.updateOne({name:element.name}, {$set: {"stats": "✅", "reason":"-"}}, async (err, succ) => {
                         if(err) return console.log(err)
                     })
                 }
@@ -102,6 +103,7 @@ app.post("/rs-really-trash", function(req,res){
 app.post("/", async function(req,res) {
     const name = req.body.name
     const reason = req.body.reason
+    const otherreason = req.body.other_reason
     const half = req.body.half_day || ""
     const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
@@ -109,18 +111,23 @@ app.post("/", async function(req,res) {
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
     const date_2 = date_1
+    var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
     } else {
         var day = `${d}${half}`
     }
+    if (reason == "personal_activity" && !otherreason){
+        var r = "รด."
+    }
     const reasonDict = {
         "sick":"ป่วย/ ติดเชื้อโควิด-19",
         "quarantine":"เสี่ยงสูง/กักตัว",
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
-        "personal_activity":"กิจกรรม (รด./ อื่นๆ)",
+        "personal_activity":`กิจกรรม (${r})`,
     }
-    const freason = reasonDict[reason]
+    const freason = reasonDict[reason] || otherreason
+    console.log(otherreason)
     const dic = { 
         "ศาสตร์ศิลป์ จับโจร":"1", 
         "ปริพรรษ์ จันทร์คุณาภาส":"2", 
@@ -197,7 +204,7 @@ app.post("/", async function(req,res) {
     const diff = getBusinessDatesCount(date_1, date_2);
     const check_week = compareWeek(new Date(), new Date(req.body.fdate))
     if (name == "" || !reason || d == "Invalid Date"){
-        console.log("Valid date passed!")
+        console.log("Valid date failed!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
         res.render('index', {
             error: error_msg,
@@ -205,7 +212,7 @@ app.post("/", async function(req,res) {
         })
     } 
     else if (diff == 0) {
-        console.log("Weekend passed!")
+        console.log("Weekend failed!")
         const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
         res.render('index', {
             error: error_msg,
@@ -213,7 +220,7 @@ app.post("/", async function(req,res) {
         })
     }
     else if (!check_week){
-        console.log("Next week passed!")
+        console.log("Next week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
         res.render('index', {
             error: error_msg,
@@ -221,8 +228,15 @@ app.post("/", async function(req,res) {
         })
     }
     else if (isBeforeToday(new Date(req.body.fdate))) {
-        console.log("Yesterday passed!")
+        console.log("Yesterday failed!")
         const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
+        res.render('index', {
+            error: error_msg,
+            old_data: req.body
+        })
+    } else if (reasonDict[reason] == undefined && !otherreason){
+        console.log("reason failed!")
+        const error_msg = "กรุณากรอกข้อมูลให้ครบ"
         res.render('index', {
             error: error_msg,
             old_data: req.body
@@ -240,7 +254,8 @@ app.post("/", async function(req,res) {
                     weekDates: THdate_1,
                     ndates: req.body.fdate,
                     nweekDate: req.body.fdate,
-                    stats: "❌"
+                    stats: "❌",
+                    reason: freason
                 })
                 await newNote.save();
                 sucs()
@@ -261,7 +276,7 @@ app.post("/", async function(req,res) {
                     console.log(`Pass ${Datepass}`)
                     if (Datepass) {
                         Note.updateOne({"name":name},
-                        {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }}, function(err, result){
+                        {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
                             } else return sucs()
