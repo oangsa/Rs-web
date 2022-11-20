@@ -192,55 +192,44 @@ app.post("/", async function(req,res) {
         }
         return count;
     }
-    const sucs = () => {
-        res.render('index', {
-            success: "ระบบบันทึกข้อมูลเรียบร้อย!",
-            old_data: req.body
-        })
-        lineNotify.notify({
+    const alert = (send, icon, title, msg) => {
+        res.status(201).render("index", {
+            sendAlert : true,
+            icon: icon,
+            title: title,
+            msg: msg
+        });
+        if (send){
+            lineNotify.notify({
             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
-        })
+            })
+        }
     }
     const diff = getBusinessDatesCount(date_1, date_2);
     const check_week = compareWeek(new Date(), new Date(req.body.fdate))
     if (name == "" || !reason || d == "Invalid Date"){
-        console.log("Valid date failed!")
+        console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
-        res.render('index', {
-            error: error_msg,
-            old_data: req.body
-        })
+        alert(false, "error", "Empty Entry!" , error_msg)
     } 
     else if (diff == 0) {
         console.log("Weekend failed!")
         const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
-        res.render('index', {
-            error: error_msg,
-            old_data: req.body
-        })
+        alert(false, "error", "Date Error!" , error_msg)
     }
     else if (!check_week){
         console.log("Next week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
-        res.render('index', {
-            error: error_msg,
-            old_data: req.body
-        })
+        alert(false, "error", "Invalid Week!" , error_msg)
     }
     else if (isBeforeToday(new Date(req.body.fdate))) {
         console.log("Yesterday failed!")
         const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
-        res.render('index', {
-            error: error_msg,
-            old_data: req.body
-        })
+        alert(false, "error", "Invalid Date!" , error_msg)
     } else if (reasonDict[reason] == undefined && !otherreason){
         console.log("reason failed!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
-        res.render('index', {
-            error: error_msg,
-            old_data: req.body
-        })
+        alert(false, "error", "Empty Entry!" , error_msg)
     }
     else {
         Note.findOne({"name":name}, async function(err, result) {
@@ -258,7 +247,7 @@ app.post("/", async function(req,res) {
                     reason: freason
                 })
                 await newNote.save();
-                sucs()
+                alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
             } else {
                 if (result.class_num != dic[name]){
                     Note.updateOne({name: name}, {$set: {class_num: dic[name]}}, async (err, su) => {
@@ -279,16 +268,13 @@ app.post("/", async function(req,res) {
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
-                            } else return sucs()
+                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
                         })
                     }
                     if (!Datepass) {
                         console.log("Same date passed!")
                         const error_msg = "คุณได้ทำการลาในวันนั้นไปแล้ว!"
-                        res.render('index', {
-                            error: error_msg,
-                            old_data: req.body
-                        })
+                        alert(false, "error", "Invalid Date!" , error_msg)
                     }
                 })
             }
