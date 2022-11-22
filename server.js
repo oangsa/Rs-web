@@ -255,26 +255,18 @@ app.post("/", async function(req,res) {
                     })
                 }
                 Note.findOne({"name":name}, function(err, result) {
-                    let Datepass = true
-                    for (var i = 0, ln = result["allDates"].length; i < ln; i++) {
-                        if (THdate_1.indexOf(result["allDates"][i]) !== -1) {
-                          Datepass = false;
-                          break;
-                        }
-                    }
-                    console.log(`Pass ${Datepass}`)
-                    if (Datepass) {
+                    console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
+                    if (result.allDates?.includes(THdate_1)) {
+                        console.log("Date Failed!")
+                        const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
+                        alert(false, "error", "Same Date!" , error_msg)
+                    } else {
                         Note.updateOne({"name":name},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
                             } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
                         })
-                    }
-                    if (!Datepass) {
-                        console.log("Same date passed!")
-                        const error_msg = "คุณได้ทำการลาในวันนั้นไปแล้ว!"
-                        alert(false, "error", "Invalid Date!" , error_msg)
                     }
                 })
             }
