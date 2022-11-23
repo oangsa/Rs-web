@@ -121,7 +121,8 @@ app.post("/", async function(req,res) {
         var r = "รด."
     }
     const reasonDict = {
-        "sick":"ป่วย/ ติดเชื้อโควิด-19",
+        "sick":"ป่วย / ไม่ใช่โควิด",
+        "covid":"ติดเชื้อโควิด-19",
         "quarantine":"เสี่ยงสูง/กักตัว",
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
