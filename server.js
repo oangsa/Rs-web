@@ -55,7 +55,7 @@ app.get("/stats", function(req,res) {
     console.log(date)
     Note.find({}, async function(err, user){
         await user.forEach(element => {
-            const comweek = compareWeek(new Date(element?.nweekDate[0]), new Date())
+            const comweek = compareWeek(new Date(element?.nweekDate[0]), new Date().toISOString({timeZone: "Asia/Bangkok"}))
             console.log(`${element.name}: ${element.allDates?.includes(date)} Comweeks: ${comweek}`)
             if (!comweek) {
                 Note.updateOne({name:element.name}, {$set: {"weekDates":[],"nweekDate":[], "week_days":0} }, async (err, succ) => {
@@ -207,7 +207,7 @@ app.post("/", async function(req,res) {
         }
     }
     const diff = getBusinessDatesCount(date_1, date_2);
-    const check_week = compareWeek(new Date(), new Date(req.body.fdate))
+    const check_week = compareWeek(new Date().toISOString({timeZone: "Asia/Bangkok"}), new Date(req.body.fdate))
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
