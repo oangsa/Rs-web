@@ -52,10 +52,11 @@ app.get("/data_table", function(req,res) {
 
 app.get("/stats", function(req,res) {
     const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
+    const dt = new Date().toLocaleDateString({timeZone: "Asia/Bangkok"})
     console.log(date)
     Note.find({}, async function(err, user){
         await user.forEach(element => {
-            const comweek = compareWeek(new Date(element?.nweekDate[0]), new Date().toISOString({timeZone: "Asia/Bangkok"}))
+            const comweek = compareWeek(new Date(element?.nweekDate[0]), new Date(dt))
             console.log(`${element.name}: ${element.allDates?.includes(date)} Comweeks: ${comweek}`)
             if (!comweek) {
                 Note.updateOne({name:element.name}, {$set: {"weekDates":[],"nweekDate":[], "week_days":0} }, async (err, succ) => {
@@ -111,6 +112,7 @@ app.post("/", async function(req,res) {
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
     const date_2 = date_1
+    const dtt = new Date().toLocaleDateString({timeZone: "Asia/Bangkok"})
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -207,7 +209,7 @@ app.post("/", async function(req,res) {
         }
     }
     const diff = getBusinessDatesCount(date_1, date_2);
-    const check_week = compareWeek(new Date().toISOString({timeZone: "Asia/Bangkok"}), new Date(req.body.fdate))
+    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
