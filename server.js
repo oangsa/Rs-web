@@ -204,7 +204,7 @@ app.post("/dev", async function(req, res) {
         });
         if (send){
             DevNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nversion: dev 2.0.0`,
             })
         }
     }
@@ -380,7 +380,7 @@ app.post("/", async function(req,res) {
         });
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release 1.0.20`,
             })
         }
     }
