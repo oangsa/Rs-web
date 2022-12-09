@@ -197,6 +197,7 @@ app.post("/dev", async function(req, res) {
     }
     const alert = (send, icon, title, msg) => {
         res.status(201).render("dev", {
+            animate: false,
             sendAlert : true,
             icon: icon,
             title: title,
