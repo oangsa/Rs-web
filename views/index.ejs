@@ -4,6 +4,243 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <style>
+      body {
+        background-color: lightblue;
+        padding: 3rem 0rem 3rem;
+        font-family: 'Itim', cursive;
+      }
+    
+      h1 {
+        text-align:center;
+      }
+    
+      .first-div {
+        background-color: white ;
+        border-radius: 0.5rem; 
+        height: fit-content; 
+        width: fit-content; 
+        margin: auto;
+        padding: 20px;
+      }
+    
+      .form {
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+      }
+    
+      .footer {
+        font-family: 'Itim';
+        background-color: rgba(255, 255, 255, 0.795); 
+        padding:1rem 1rem 1rem; 
+        border-radius: 0.5rem;
+      }
+
+      .second-footer {
+        background-color: skyblue; 
+        padding:1rem 1rem 1rem; 
+        border-radius: 0.5rem;
+      }
+    
+      .hidden{
+        display: none;
+      }
+      
+      .show{
+        display: block;
+      }
+      
+      .swal2-popup {
+        font-family: 'Itim';
+      }
+
+      .animated {
+        animation: fadeIn, slideInDown;
+        animation-duration: 1.5s;
+      }
+    
+    </style>
+</head>
+<body>
+  <div id="test" class="animated first-div">
+    <div>
+      <p></p><h1 class="heading">เว็บสำหรับกรอกข้อมูลการลา</h1><p></p>
+      <form id="form" class= "animated form" method="post" action="/">
+        <label for="name" class="form-label">ชื่อ-นามสกุล:</label> 
+        <select class="form-select" name="name" id="name" required>
+          <option value=""disabled selected>กรุณาเลือก</option>
+          <option value="ศาสตร์ศิลป์ จับโจร">ศาสตร์ศิลป์ จับโจร</option>
+          <option value="ปริพรรษ์ จันทร์คุณาภาส">ปริพรรษ์ จันทร์คุณาภาส</option>
+          <option value="ภคิน ไชยพรม">ภคิน ไชยพรม</option>
+          <option value="ภวัต ขอเหนี่ยวกลาง">ภวัต ขอเหนี่ยวกลาง</option>
+          <option value="ยอดยชญ์ภูมิ ภิญโญ">ยอดยชญ์ภูมิ ภิญโญ</option>
+          <option value="วุฒินนท์ โชคเหมาะ">วุฒินนท์ โชคเหมาะ</option>
+          <option value="ปุญญพัฒน์ ตองอ่อน">ปุญญพัฒน์ ตองอ่อน</option>
+          <option value="พัฒนพงศ์ ขวัญมา">พัฒนพงศ์ ขวัญมา</option>
+          <option value="ภูวรินทร์ ไตรจักรปราณี">ภูวรินทร์ ไตรจักรปราณี</option>
+          <option value="วชิรวิทย์ สืบกระแสร์">วชิรวิทย์ สืบกระแสร์</option>
+          <option value="เขมวรรธน์ หีบสระน้อย">เขมวรรธน์ หีบสระน้อย</option>
+          <option value="จิรภัทร ประจิมนอก">จิรภัทร ประจิมนอก</option>
+          <option value="ธนพล อนันฤทธิ์">ธนพล อนันฤทธิ์</option>
+          <option value="ณฐกร กุลจิรภัทร์">ณฐกร กุลจิรภัทร์</option>
+          <option value="สุรขวัญชัย จุลเกาะ">สุรขวัญชัย จุลเกาะ</option>
+          <option value="อรรถพร ปรีชาชาญ">อรรถพร ปรีชาชาญ</option>
+          <option value="กฤษฎิ์ ผาสุขนิตย์">กฤษฎิ์ ผาสุขนิตย์</option>
+          <option value="ธนโชติ เยื่ยมสระน้อย">ธนโชติ เยื่ยมสระน้อย</option>
+          <option value="พงศ์ปณต พรหมพันธ์ใจ">พงศ์ปณต พรหมพันธ์ใจ</option>
+          <option value="ภีมวัศ อเบอร์โครบี้">ภีมวัศ อเบอร์โครบี้</option>
+          <option value="เตชินท์ บุญยศ">เตชินท์ บุญยศ</option>
+          <option value="ภัทรพันธ์ ชูธรัตน์">ภัทรพันธ์ ชูธรัตน์</option>
+          <option value="กิตติมศักดิ์ เขตกลาง">กิตติมศักดิ์ เขตกลาง</option>
+          <option value="นราวิชญ์ วรรัตน์โภคา">นราวิชญ์ วรรัตน์โภคา</option>
+          <option value="ภูธเนศ งาจันทึก">ภูธเนศ งาจันทึก</option>
+          <option value="มโนรัฐ หอมจะบก">มโนรัฐ หอมจะบก</option>
+          <option value="สุธางค์ สุขเรืองกูล">สุธางค์ สุขเรืองกูล</option>
+          <option value="กันตธีร์ พงศ์ไพสิทธิ์">กันตธีร์ พงศ์ไพสิทธิ์</option>
+          <option value="กนกพล ธงกระโทก">กนกพล ธงกระโทก</option>
+          <option value="พงษ์พิทักษ์ ดิบประโคน">พงษ์พิทักษ์ ดิบประโคน</option>
+          <option value="วิศิษฐวรชาติ วิศวเลิศทรัพย์">วิศิษฐวรชาติ วิศวเลิศทรัพย์</option>
+          <option value="สรศักดิ์ คิดทำ">สรศักดิ์ คิดทำ</option>
+          <option value="อภิสิทธิ์ สมดี">อภิสิทธิ์ สมดี</option>
+          <option value="ปฏิภาณวัฒน์ ชาชำนาญ">ปฏิภาณวัฒน์ ชาชำนาญ</option>
+          <option value="ปณิธาน พลเสนา">ปณิธาน พลเสนา</option>
+          <option value="ศักดิ์สิทธิ์ หวังอ้อมกลาง">ศักดิ์สิทธิ์ หวังอ้อมกลาง</option>
+          <option value="พัสกร เชื้อจันทึก">พัสกร เชื้อจันทึก</option>
+          <option value="ณรรชถปกร เรืองนิคม">ณรรชถปกร เรืองนิคม</option>
+          <option value="กุญช์ภัสส์ หาญเวช">กุญช์ภัสส์ หาญเวช</option>
+          <option value="ชาญนาวิน จำปา">ชาญนาวิน จำปา</option>
+          <option value="ฐิติรัตน์ อภิโชติศาสตร์">ฐิติรัตน์ อภิโชติศาสตร์</option>
+          <option value="ธนกร กระจ่างธิมาพร">ธนกร กระจ่างธิมาพร</option>
+          <option value="พิตรพิบูล ศิริกุล">พิตรพิบูล ศิริกุล</option>
+          <option value="สรยุทธ ช่างเหล็ก">สรยุทธ ช่างเหล็ก</option>
+      </select><p></p>
+      <div>
+        <label class="form-label" for="date">ลาวันที่:</label>
+        <input class="form-control" type="date" name="fdate" id="fdate" required><p></p>
+      </div>
+      <div>
+        <label for="half_day" class="form-label">ลาครึ่งวัน(ลาทั้งวันไม่ต้องเลือก):</label>
+        <select class="form-select" name="half_day" id="half_day">
+          <option value=""disabled selected>กรุณาเลือก</option>
+          <option value="ทั้งวัน">ทั้งวัน(กรณีกดผิด)</option>
+          <option value="ครึ่งเช้า">ครึ่งเช้า</option>
+          <option value="ครึ่งบ่าย">ครึ่งบ่าย</option>
+        </select>
+      </div><p></p>
+      <div style="color:red">*กรณีที่กิจกรรม "ไม่ใช่รด." ต้องกรอกกิจกรรมที่ไปด้วย*</div>
+      <div class="form-label" required>
+        <label for="reason" class="form-label">สาเหตุการลา:</label> 
+        <select class="form-select" name="reason" id="reason" required>
+          <option value=""disabled selected>กรุณาเลือก</option>
+          <option value="sick">ป่วย</option>
+          <option value="covid">โควิด</option>
+          <option value="quarantine">กักตัว</option>
+          <option value="parent_activity">ลากิจ</option>
+          <option value="personal_activity">กิจกรรม</option>
+          <option value="other">อื่นๆ</option>
+      </select><p></p>
+      <div class="hidden" id="oreason">
+        <input class="form-control" type="text" name="other_reason" id="other_reason" placeholder="กรุณาระบุ...">
+      </div>
+    </div>
+      <div><p></p>
+        <button class="btn btn-primary" id="submitbtn">Submit</button>
+      </div><p></p>
+      <form method="GET" action="/data_table" style="display: flex;flex-direction: column;">
+        <div><button class="btn btn-secondary" id="gotable">สรุปข้อมูล</button></div>
+      </form><p></p>
+      <form method="GET" action="/stats" style="display: flex;flex-direction: column;">
+        <div><button class="btn btn-secondary" id="gotable">status</button></div>
+      </form>
+      <div><p></p>    
+      </div>
+    </form>
+    </div>
+  </div>
+  <% if (locals.sendAlert) { %> 
+    <script>
+      Swal.fire({
+        icon: "<%= icon %>",
+        title: "<%= title %>",
+        text: "<%= msg %>",
+        showConfirmButton: true,
+      })
+   </script>
+   <% } %>
+  <script>
+    $("#reason").on('change', function(){
+      var res = $(this).val();
+      if(res == "other" || res == "personal_activity"){
+        $("#oreason").removeClass("hidden")
+        $("#oreason").addClass("show")
+      } else {
+        $("#oreason").removeClass("show")
+        $("#oreason").addClass("hidden")
+      }
+    }).change();
+
+  </script>
+</body>
+<p>
+  <footer id="footer" class="animated bg-light text-center text-lg-start">
+  <div class="footer">
+      <div class="container p-1">
+          <div id="row" class="animated row">
+            <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Developed By:</h5>
+              <p>
+                <div>Suthang Sukrueangkun</div>
+                <div>Secondary 5</div>
+                <div>Ratchasima Witthayalai School</div>
+              </p>
+            </div>
+            <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+              <h5 class="text-uppercase">Version:</h5>
+              <p>
+                <div style="color:skyblue">Release 2.0.0</div>
+              </p>
+              <h5 class="text-uppercase">Contact me:</h5>
+              <p>
+                You can't. UWU
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="second-footer" class="animated second-footer text-center p-3">
+          © 2022 Copyright:
+          <a id="ref"class="animated text-dark" href="https://tub5-rs119.onrender.com/">https://tub5-rs119.onrender.com/</a>
+        </div>      
+  </div>
+</footer>
+<% if (locals.animate === false) { %> 
+  <script>
+    console.log("dad")
+    $("#test").removeClass("animated")
+    $("#form").removeClass("animated")
+    $("#footer").removeClass("animated")
+    $("#second-footer").removeClass("animated")
+    $("#row").removeClass("animated")
+    $("#ref").removeClass("animated")
+ </script>
+ <% } %>
+</p>
+</html>
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS5/5_119</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -111,14 +348,6 @@
       <div><p></p>    
       </div>
     </form>
-    <div>
-      <form class="container" method="GET" action="/data_table" style="display: flex;flex-direction: column;">
-        <div><button class="btn btn-secondary" id="gotable">สรุปข้อมูล</button></div>
-      </form><p></p>
-      <form class="container" method="GET" action="/stats" style="display: flex;flex-direction: column;">
-        <div><button class="btn btn-secondary" id="gotable">status</button></div>
-      </form>
-    </div>
     </div>
   </div>
   <% if (locals.sendAlert) { %> 
@@ -161,7 +390,7 @@
             <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
               <h5 class="text-uppercase">Version:</h5>
               <p>
-                <div style="color:skyblue">Release 69</div>
+                <div style="color:skyblue">Release 1.0.20</div>
               </p>
               <h5 class="text-uppercase">Contact me:</h5>
               <p>
@@ -177,4 +406,4 @@
   </div>
 </footer>
 </p>
-</html>
+</html> -->

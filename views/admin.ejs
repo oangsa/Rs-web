@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.13.1/fc-4.2.1/r-2.4.0/datatables.min.css"/>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Admin Access</title>
+</head>
+<style>
+    .swal2-popup {
+        font-family: 'Itim';
+    }
+</style>
+<body class="container" style="background-color: lightblue; padding: 3rem 0rem 3rem; margin-top: 50px">
+    <% if (locals.sendAlert) { %> 
+        <script>
+          Swal.fire({
+            icon: "<%= icon %>",
+            title: "<%= title %>",
+            text: "<%= msg %>",
+            showConfirmButton: true,
+          })
+       </script>
+    <% } %>
+    <div class="card" style="font-family: 'Itim'; background-color: white ;border-radius: 0.5rem; width: 100%; padding: 20px;">
+        <div class="card-header">
+            <ul class="nav nav-pills w-100">
+                <li class="nav-link" style="font-size:xx-large;">Datatables</li>
+                <li class="nav-link ml-auto">
+                    <a href="admin/add" class="nav-link active">Add New Student</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card" style="padding: 20px;">
+            <% if (data.length) { %>
+                <table class="table table-striped" id="myTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">เลขที่</th>
+                            <th scope="col">ชื่อ-นามสกุล</th>
+                            <th scope="200px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%data.forEach(user => {%>
+                            <tr>
+                                <th scope="row"><%= user.class_num %></th>
+                                <td><%= user.name %></td>
+                                <td>
+                                    <a href="admin/edit/<%= user.class_num %>" class="btn btn-success edit">Edit</a>
+                                    <a href="admin/remove/<%= user.class_num %>" onclick="return alert('Are you sure?')" class="btn btn-danger edit">Delete</a>
+                                </td>
+                            </tr>
+                        <%})%>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </div>
+    <p>
+        <div>
+            <form action="/logout" method="post">
+                <button class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+    </p>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.13.1/fc-4.2.1/r-2.4.0/datatables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#myTable').DataTable( {
+                dom: 'Bfrtip',
+            } );
+        } );
+    </script>
+</body>
+</html>
