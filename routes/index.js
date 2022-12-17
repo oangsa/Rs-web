@@ -3,6 +3,8 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
+const devVersion = "3.0.0";
+const releaseVersion = "2.0.0";
 const mongoose = require("mongoose");
 const dbURL = "mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority";
 const devDbURL = "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority";
@@ -144,7 +146,11 @@ router.get('/stats', (req, res, next) => {
 })
 
 router.get("/dev", async function(req, res) {
-    res.render("dev")
+    devNote.find({}, (err, user) => {
+        res.render("dev", {
+            dataLists: user
+        })
+    }).sort("class_num")
 })
 
 router.get("/data_table", function(req,res) {
@@ -199,7 +205,7 @@ router.post("/dev", async function(req, res) {
         });
         if (send){
             DevNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: DEV 2.0.0`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: DEV ${devVersion}`,
             })
         }
     }
@@ -308,7 +314,7 @@ router.post("/", async function(req,res) {
         });
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release 1.0.20`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,
             })
         }
     }
@@ -416,30 +422,35 @@ router.post('/add', async (req, res, next) => {
     }
 
     if (name === "" || number === "") {
-        Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกข้อมูลด้วย")
-    } else {
-        devNote.findOne({class_num: number}, async function(err, user){
-            if (!user) {
-                let newNote = new devNote({
-                    name: name,
-                    class_num: number,
-                    total_days: 0,
-                    week_days: 0,
-                    allDates: {},
-                    weekDates: {},
-                    ndates: {},
-                    nweekDate: {},
-                    stats: "❌",
-                    reason: ""
-                })
-                await newNote.save();
-                Alert(true, name, number, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว")
-            } else {
-                Alert(true, name, number, "error", "ไม่สำเร็จ", "เลขที่ดังกล่าวมีแล้ว")
-            }
-        })
+        Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกข้อมูลด้วย");
     }
-
+    else if (isNaN(parseInt(number))) {
+        Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกเลขที่ให้ถูกต้อง");
+    }
+    else {
+        devNote.findOne({class_num: number}, async function(err, user){
+            devNote.findOne({name: name}, async function(err, ur){
+                if (!user && !ur) {
+                    let newNote = new devNote({
+                        name: name,
+                        class_num: number,
+                        total_days: 0,
+                        week_days: 0,
+                        allDates: {},
+                        weekDates: {},
+                        ndates: {},
+                        nweekDate: {},
+                        stats: "❌",
+                        reason: ""
+                    })
+                    await newNote.save();
+                    Alert(true, name, number, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว");
+                } else {
+                    Alert(true, name, number, "error", "ไม่สำเร็จ", "เลขที่/ ชื่อดังกล่าวมีแล้ว");
+                }
+            })
+        })    
+    }
 })
 
 router.get("/edit/(:id)",isAuth, async (req, res, next) => {

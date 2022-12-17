@@ -42,22 +42,18 @@ app.get("/login", (req, res, next) => {
         pass: ""
     })
 })
-
 app.post("/gologin", (req, res, next) => {
     let { name, pass } = req.body;
     if (name === "admin" && pass === "password") {
         req.session.isAuth = true;
         res.redirect("/admin")
-    } else {
-        res.render("login",{
-            name: name,
-            pass: "",
-            sendAlert: true,
-            icon: "error",
-            title: "Authenticate Failed!",
-            msg: "Invalid Username or Password."
-        })
     }
+})
+
+app.post('/logout', async (req, res, next) => {
+    req.session.destroy((err) => {
+        res.redirect("/login")
+    })
 })
 
 app.use("/", (req, res) => {
