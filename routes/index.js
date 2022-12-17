@@ -196,13 +196,16 @@ router.post("/dev", async function(req, res) {
     const diff = getBusinessDatesCount(date_1, date_1);
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     const alert = (send, icon, title, msg) => {
-        res.status(201).render("dev", {
-            animate: false,
-            sendAlert : true,
-            icon: icon,
-            title: title,
-            msg: msg
-        });
+        devNote.find({}, (err, user) => {
+            res.status(201).render("dev", {
+                animate: false,
+                sendAlert : true,
+                icon: icon,
+                title: title,
+                msg: msg,
+                dataLists: user
+            });
+        }).sort("class_num")
         if (send){
             DevNotify.notify({
             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: DEV ${devVersion}`,
