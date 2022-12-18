@@ -18,10 +18,10 @@
 <body class="container" style="background-color: lightblue; padding: 3rem 0rem 3rem; margin-top: 50px">
     <div class="card" style="font-family: 'Itim'; background-color: white ;border-radius: 0.5rem; width: 100%; padding: 20px;">
         <div class="card-header">
-            Login
+            Login (Admin Access)
         </div>
         <div class="card-body">
-            <form action="/gologin" method="post">
+            <form action="/admin/gologin" method="post">
                 <div class="form-group">
                     <label>Username:</label>
                     <input type="text" class="form-control" name="name" value="<%= name %>" autocomplete="off" id="name">
@@ -35,7 +35,7 @@
                 </div>
             </form>
             <div>
-                <form action="/dev" method="GET">
+                <form action="/" method="GET">
                     <div class="form-group">
                         <button class="btn btn-danger">ย้อนกลับ</button>
                     </div>

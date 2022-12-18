@@ -75,13 +75,9 @@
   <div id="test" class="animated first-div">
     <div>
       <p></p><h1 class="heading">เว็บสำหรับกรอกข้อมูลการลา</h1><p></p>
-      <form id="form" class= "animated form" method="post" action="/dev">
+      <form id="form" class= "animated form" method="post" action="/dev/devsend">
         <label for="name" class="form-label">ชื่อ-นามสกุล:</label> 
-        <select class="form-select" name="name" id="name" required>
-          <option value=""disabled selected>กรุณาเลือก</option>
-          <% for (const comp of dataLists) { %>
-            <option value='<%= comp.name %>'><%= comp.name %></option>
-          <% } %> 
+        <label for="name" class="form-label" style="color: #007FFF; font-family: 'Itim'; font-size: x-large;"><%= dataLists.name %></label>
 
       </select><p></p>
       <div>
@@ -119,6 +115,13 @@
       <div><p></p>    
       </div>
     </form>
+    <p>
+      <form action="/admin">
+        <div><p></p>
+          <button class="btn btn-secondary" id="submitbtn">ADMIN</button>
+        </div>
+      </form>
+    </p>
     </div>
   </div>
   <% if (locals.sendAlert) { %> 

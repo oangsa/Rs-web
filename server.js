@@ -10,6 +10,8 @@ const PORT = 3000 || process.env.PORT
 const MongoDBsession = require("connect-mongodb-session")(session)
 
 var indexRouter = require("./routes/index")
+var adminRouter = require("./routes/admin")
+var devRouter = require("./routes/dev")
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
@@ -18,10 +20,11 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
-const store = new MongoDBsession({
-    uri: "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority",
-    collection: "session"
-})
+const store = new session.MemoryStore();
+// const store = new MongoDBsession({
+//     uri: "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority",
+//     collection: "session"
+// })
 app.use(session({
     cookie: { maxAge: 60000 },
     saveUninitialized: false,
@@ -33,21 +36,14 @@ app.use(session({
 app.use('/', indexRouter);
 app.use('/stats', indexRouter);
 app.use('/data_table', indexRouter);
-app.use('/dev', indexRouter);
-app.use('/admin', indexRouter);
+app.use('/dev', devRouter);
+app.use('/admin', adminRouter);
 
 app.get("/login", (req, res, next) => {
     res.render("login",{
         name: "",
         pass: ""
     })
-})
-app.post("/gologin", (req, res, next) => {
-    let { name, pass } = req.body;
-    if (name === "admin" && pass === "password") {
-        req.session.isAuth = true;
-        res.redirect("/admin")
-    }
 })
 
 app.post('/logout', async (req, res, next) => {
@@ -63,3 +59,5 @@ app.use("/", (req, res) => {
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
 })
+
+module.exports = store;
