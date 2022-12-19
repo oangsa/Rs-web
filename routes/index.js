@@ -226,7 +226,7 @@ router.post("/", async function(req,res) {
                         const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
                         alert(false, "error", "Same Date!" , error_msg)
                     } else {
-   .updateOne({"name":name},
+   Note.updateOne({"name":name},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
