@@ -3,6 +3,8 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 let devNote = require("../libs/devDB")
+let Note = require("../libs/db")
+const cron = require("node-cron")
 const devVersion = "3.0.0";
 
 const isDev = require("../middleWare/isDev")
@@ -25,6 +27,25 @@ let getBusinessDatesCount = (startDate, endDate) => {
     }
     return count;
 }
+
+cron.schedule('0 5 23 * * *', () => {
+    const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
+    const array = [];
+    var i = 0;
+    Note.find({}, async (err, user) => {
+        user.forEach(element => {
+            console.log(element.allDates?.includes(date))
+            if (element.allDates?.includes(date)){
+                i++
+                array.push(`${element.name} #${element.class_num}`)
+            }
+        });
+        DevNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${devVersion}`})
+    }).sort("class_num")
+  }, {
+    scheduled: true,
+    timezone: "Asia/Bangkok"
+});
 
 router.post("/gostudent", async function(req, res, next) {
     let { name, pass } = req.body;
@@ -95,13 +116,7 @@ router.post("/devsend", isDev, async function(req, res) {
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
     }
-
-    console.log("happy hour?")
-    if( new Date().toUTCString({timeZone: "Asia/Bangkok"}) <= new Date().setHours(22, 0, 0) ){
-        console.log("yes!");
-    } else {
-        console.log("no, sorry! between 5.30pm and 6.30pm");
-    }
+    console.log(new Date(dtt) > new Date(dtt).setHours(8, 0, 0))
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
@@ -146,6 +161,11 @@ router.post("/devsend", isDev, async function(req, res) {
         console.log("reason failed!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
         alert(false, "error", "Empty Entry!" , error_msg)
+    }
+    else if ( new Date(dtt) > new Date(dtt).setHours(8, 0, 0) ) {
+        console.log("time failed!")
+        const error_msg = "ไม่สามารถลาได้ช้ากว่า 8.00 น."
+        alert(false, "error", "Time Error!" , error_msg)
     }
     else {
         devNote.findOne({studentId: req.session.devId}, async function(err, result) {

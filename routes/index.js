@@ -5,6 +5,7 @@ let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7
 let isStudent = require("../middleWare/isStudent")
 const releaseVersion = "2.5.1";
 const Note = require("../libs/db");
+const cron = require("node-cron")
 
 let isBeforeToday = (date) => {
     const today = new Date();
@@ -25,8 +26,27 @@ let getBusinessDatesCount = (startDate, endDate) => {
     return count;
 }
 
+cron.schedule('0 10 8 * * *', () => {
+    const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
+    const array = [];
+    var i = 0;
+    Note.find({}, async (err, user) => {
+        user.forEach(element => {
+            console.log(element.allDates?.includes(date))
+            if (element.allDates?.includes(date)){
+                i++
+                array.push(`${element.name} #${element.class_num}`)
+            }
+        });
+        lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${devVersion}`})
+    }).sort("class_num")
+  }, {
+    scheduled: true,
+    timezone: "Asia/Bangkok"
+});
+
 router.get('/', isStudent, (req, res, next) => {
-    Note.findOne({name:req.session.name}, (err, data) => {
+    Note.findOne({studentId: req.session.id}, (err, data) => {
         res.render("index", {
             dataLists: data
         })
@@ -104,10 +124,9 @@ router.post("/gostudent", (req, res, next) => {
             if (name === user.name.split(" ")[0] && pass === user.studentId){
 
                 req.session.name = user.name;
-
+                req.session.id = user.studentId;
                 req.session.isStudent = true;
                 req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
-                // data = user
                 res.redirect("/")
             }
             else {
@@ -139,6 +158,7 @@ router.post("/", async function(req,res) {
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
+    const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -174,7 +194,7 @@ router.post("/", async function(req,res) {
     }
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
-    const check_week = compareWeek(new Date(new Date().toUTCString({timeZone: "Asia/Bangkok"})), new Date(req.body.fdate))
+    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     if (!name) {
         res.redirect("/")
     }
@@ -197,24 +217,30 @@ router.post("/", async function(req,res) {
         console.log("Yesterday failed!")
         const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
         alert(false, "error", "Invalid Date!" , error_msg)
-    } else if (reasonDict[reason] == undefined && !otherreason){
+    } 
+    else if (reasonDict[reason] == undefined && !otherreason){
         console.log("reason failed!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
         alert(false, "error", "Empty Entry!" , error_msg)
+    } 
+    else if ( new Date(dtt) > new Date(dtt).setHours(8, 0, 0) ) {
+        console.log("time failed!")
+        const error_msg = "ไม่สามารถลาได้ช้ากว่า 8.00 น."
+        alert(false, "error", "Time Error!" , error_msg)
     }
     else {
-        Note.findOne({"name":name}, async function(err, result) {
+        Note.findOne({studentId: req.session.id}, async function(err, result) {
             if (!result) {
-                alert(true, "error", "NAME ERROR" , "กรุณาส่งให้ developer")
+                alert(true, "error", "Name Error!" , "WTF this is an impossible error.\nกรุณาส่งให้ developer")
             } else {
-                Note.findOne({"name":name}, function(err, result) {
+                Note.findOne({studentId: req.session.id}, function(err, result) {
                     console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
                     if (result.allDates?.includes(THdate_1)) {
                         console.log("Date Failed!")
                         const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
                         alert(false, "error", "Same Date!" , error_msg)
                     } else {
-                        Note.updateOne({"name":name},
+                        Note.updateOne({studentId: req.session.id},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
