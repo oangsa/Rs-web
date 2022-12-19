@@ -219,19 +219,14 @@ router.post("/", async function(req,res) {
                 await newNote.save();
                 alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
             } else {
-                if (result.class_num != dic[name]){
-                    Note.updateOne({name: name}, {$set: {class_num: dic[name]}}, async (err, su) => {
-                        if (err) return console.log(err)
-                    })
-                }
-                Note.findOne({"name":name}, function(err, result) {
+                             Note.findOne({"name":name}, function(err, result) {
                     console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
                     if (result.allDates?.includes(THdate_1)) {
                         console.log("Date Failed!")
                         const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
                         alert(false, "error", "Same Date!" , error_msg)
                     } else {
-                        Note.updateOne({"name":name},
+   .updateOne({"name":name},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
