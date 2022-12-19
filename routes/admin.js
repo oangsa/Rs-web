@@ -19,7 +19,7 @@ router.post("/gologin", async (req, res, next) => {
     let { name, pass } = req.body;
     if (name === "admin" && pass === "password") {
         req.session.isAuth = true
-        req.session.isAuth.maxAge = 360 * 24 * 60 * 60;
+        req.session.isAuth.maxAge = 3600;
         if (req.session.isAuth === true) return res.redirect("/admin");
     } else {
         res.render("login",{
@@ -33,7 +33,13 @@ router.post("/gologin", async (req, res, next) => {
     }
 })
 
-router.get("/add",isAuth, (req, res, next) => {
+router.post('/logout', async (req, res, next) => {
+    req.session.destroy((err) => {
+        res.redirect("/login")
+    })
+})
+
+router.get("/add", isAuth, (req, res, next) => {
     res.render("admin/add", {
         name: "",
         number: "",
@@ -64,7 +70,7 @@ router.post('/add', async (req, res, next) => {
     else if (isNaN(parseInt(number))) {
         Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกเลขที่ให้ถูกต้อง");
     } 
-    else if (isNaN(parseInt(id)) || id.length < 5) {
+    else if (isNaN(parseInt(id)) || id.length !== 5) {
         Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกเลขประจำตัวนักเรียนให้ถูกต้อง");
     } 
     else {

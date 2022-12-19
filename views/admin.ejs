@@ -54,7 +54,7 @@
                                 <td><%= user.name %></td>
                                 <td>
                                     <a href="admin/edit/<%= user.class_num %>" class="btn btn-success edit">Edit</a>
-                                    <a href="admin/remove/<%= user.class_num %>" onclick="return myFunction()" class="btn btn-danger edit" id="del">Delete</a>
+                                    <a href="admin/remove/<%= user.class_num %>" onclick="return alert('Are you sure?')" class="btn btn-danger edit" id="del">Delete</a>
                                 </td>
                             </tr>
                         <%})%>
@@ -63,7 +63,7 @@
             <% } %>
             <p>
                 <div>
-                    <form action="/logout" method="post">
+                    <form action="admin/logout" method="post">
                         <button class="btn btn-danger">Logout</button>
                     </form>
                 </div>
@@ -78,26 +78,6 @@
                 dom: 'Bfrtip',
             } );
         } );
-        function myFunction() {
-            Swal.fire({
-                title: 'Do you want to save the changes?',
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                denyButtonText: 'No',
-                customClass: {
-                    actions: 'my-actions',
-                    cancelButton: 'order-1 right-gap',
-                    confirmButton: 'order-2',
-                    denyButton: 'order-3',
-                }}).then((result) => {
-                  if (result.isConfirmed) {
-                    Swal.fire('Saved!', '', 'success')
-                  } else if (result.isDenied) {
-                    Swal.fire('Changes are not saved', '', 'info')
-                  }
-            })
-        }
     </script>
 </body>
 </html>

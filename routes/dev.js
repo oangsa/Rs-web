@@ -5,52 +5,6 @@ let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2Vw
 let devNote = require("../libs/devDB")
 const devVersion = "3.0.0";
 var data;
-let dic = { 
-    "ศาสตร์ศิลป์ จับโจร":"1", 
-    "ปริพรรษ์ จันทร์คุณาภาส":"2", 
-    "ภคิน ไชยพรม":"3", 
-    "ภวัต ขอเหนี่ยวกลาง":"4", 
-    "ยอดยชญ์ภูมิ ภิญโญ":"5", 
-    "วุฒินนท์ โชคเหมาะ":"6", 
-    "ปุญญพัฒน์ ตองอ่อน":"7", 
-    "พัฒนพงศ์ ขวัญมา":"8", 
-    "ภูวรินทร์ ไตรจักรปราณี":"9", 
-    "วชิรวิทย์ สืบกระแสร์":"10", 
-    "เขมวรรธน์ หีบสระน้อย":"11", 
-    "จิรภัทร ประจิมนอก":"12", 
-    "ธนพล อนันฤทธิ์":"13", 
-    "ณฐกร กุลจิรภัทร์":"14", 
-    "สุรขวัญชัย จุลเกาะ":"15", 
-    "อรรถพร ปรีชาชาญ":"16", 
-    "กฤษฎิ์ ผาสุขนิตย์":"17", 
-    "ธนโชติ เยื่ยมสระน้อย":"18", 
-    "พงศ์ปณต พรหมพันธ์ใจ":"19", 
-    "ภีมวัศ อเบอร์โครบี้":"20", 
-    "เตชินท์ บุญยศ":"21", 
-    "ภัทรพันธ์ ชูธรัตน์":"22", 
-    "กิตติมศักดิ์ เขตกลาง":"23",
-    "นราวิชญ์ วรรัตน์โภคา":"24", 
-    "ภูธเนศ งาจันทึก":"25", 
-    "มโนรัฐ หอมจะบก":"26", 
-    "สุธางค์ สุขเรืองกูล":"27", 
-    "กันตธีร์ พงศ์ไพสิทธิ์":"28", 
-    "กนกพล ธงกระโทก":"29", 
-    "พงษ์พิทักษ์ ดิบประโคน":"30", 
-    "วิศิษฐวรชาติ วิศวเลิศทรัพย์":"31", 
-    "สรศักดิ์ คิดทำ":"32", 
-    "อภิสิทธิ์ สมดี":"33", 
-    "ปฏิภาณวัฒน์ ชาชำนาญ":"34", 
-    "ปณิธาน พลเสนา":"35", 
-    "ศักดิ์สิทธิ์ หวังอ้อมกลาง":"36", 
-    "พัสกร เชื้อจันทึก":"37", 
-    "ณรรชถปกร เรืองนิคม":"38", 
-    "กุญช์ภัสส์ หาญเวช":"39", 
-    "ชาญนาวิน จำปา":"40", 
-    "ฐิติรัตน์ อภิโชติศาสตร์":"41", 
-    "ธนกร กระจ่างธิมาพร":"42", 
-    "พิตรพิบูล ศิริกุล":"43", 
-    "สรยุทธ ช่างเหล็ก":"44", 
-}
 
 const isDev = require("../middleWare/isDev")
 
@@ -76,8 +30,6 @@ let getBusinessDatesCount = (startDate, endDate) => {
 router.post("/gostudent", async function(req, res, next) {
     let { name, pass } = req.body;
     devNote.findOne({studentId:pass}, (err, user) => {
-        data = user
-        console.log(user)
         if(!user) {
             res.render("dev/devLogin", {
                 sendAlert: true,
@@ -89,9 +41,10 @@ router.post("/gostudent", async function(req, res, next) {
             })
         } else {
             if (name === user.name.split(" ")[0] && pass === user.studentId){
+                req.session.devName = user.name;
+                req.session.devId = user.studentId;
                 req.session.isDev = true;
-                req.session.isDev.maxAge = 365 * 24 * 60 * 60 * 1000;
-                // req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+                req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
                 res.redirect("/dev")
             }
             else {
@@ -109,15 +62,15 @@ router.post("/gostudent", async function(req, res, next) {
 })
 
 router.get("/", isDev, async function(req, res) {
-    res.render("dev",{
-        dataLists: data
+    devNote.findOne({studentId: req.session.devId}, async (err, data) => {
+        res.render("dev",{
+            dataLists: data
+        })
     })
 })
 
 router.post("/devsend", isDev, async function(req, res) {
-    const name = data?.name
-    if (name === undefined) return res.redirect("/")
-    console.log(name)
+    const name = req.session.devName
     const reason = req.body.reason
     const otherreason = req.body.other_reason
     const half = req.body.half_day || ""
@@ -143,18 +96,27 @@ router.post("/devsend", isDev, async function(req, res) {
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
     }
+
+    console.log("happy hour?")
+    if( new Date().toUTCString({timeZone: "Asia/Bangkok"}) <= new Date().setHours(22, 0, 0) ){
+        console.log("yes!");
+    } else {
+        console.log("no, sorry! between 5.30pm and 6.30pm");
+    }
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     const alert = (send, icon, title, msg) => {
-        res.status(201).render("dev", {
-            animate: false,
-            sendAlert : true,
-            icon: icon,
-            title: title,
-            msg: msg,
-            dataLists: data
-        });
+        devNote.findOne({studentId: req.session.devId}, async (err, user) => {
+            res.status(201).render("dev", {
+                animate: false,
+                sendAlert : true,
+                icon: icon,
+                title: title,
+                msg: msg,
+                dataLists: user
+            });
+        })
         if (send){
             DevNotify.notify({
             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: DEV ${devVersion}`,
@@ -187,36 +149,18 @@ router.post("/devsend", isDev, async function(req, res) {
         alert(false, "error", "Empty Entry!" , error_msg)
     }
     else {
-        devNote.findOne({"name":name}, async function(err, result) {
+        devNote.findOne({studentId: req.session.devId}, async function(err, result) {
             if (!result) {
-                let newNote = new devNote({
-                    name: name,
-                    class_num: dic[name],
-                    total_days: diff,
-                    week_days: diff,
-                    allDates: THdate_1,
-                    weekDates: THdate_1,
-                    ndates: req.body.fdate,
-                    nweekDate: req.body.fdate,
-                    stats: "❌",
-                    reason: freason
-                })
-                await newNote.save();
-                alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
+                alert(true, "error", "NAME ERROR" , "กรุณาส่งให้ developer");
             } else {
-                if (result.class_num != dic[name]){
-                    devNote.updateOne({name: name}, {$set: {class_num: dic[name]}}, async (err, su) => {
-                        if (err) return console.log(err)
-                    })
-                }
-                devNote.findOne({"name":name}, function(err, result) {
+                devNote.findOne({studentId: req.session.devId}, function(err, result) {
                     console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
                     if (result.allDates?.includes(THdate_1)) {
                         console.log("Date Failed!")
                         const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
                         alert(false, "error", "Same Date!" , error_msg)
                     } else {
-                        devNote.updateOne({"name":name},
+                        devNote.updateOne({studentId: req.session.devId},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)

@@ -20,11 +20,10 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
-const store = new session.MemoryStore();
-// const store = new MongoDBsession({
-//     uri: "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority",
-//     collection: "session"
-// })
+const store = new MongoDBsession({
+    uri: "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority",
+    collection: "session"
+})
 app.use(session({
     cookie: { maxAge: 60000 },
     saveUninitialized: false,
@@ -46,12 +45,6 @@ app.get("/login", (req, res, next) => {
     })
 })
 
-app.post('/logout', async (req, res, next) => {
-    req.session.destroy((err) => {
-        res.redirect("/login")
-    })
-})
-
 app.use("/", (req, res) => {
     res.status(404).send(res.render("err"))
 })
@@ -59,5 +52,3 @@ app.use("/", (req, res) => {
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
 })
-
-module.exports = store;

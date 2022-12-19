@@ -3,7 +3,7 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 let isStudent = require("../middleWare/isStudent")
-const releaseVersion = "2.5.0";
+const releaseVersion = "2.5.1";
 const Note = require("../libs/db");
 
 let isBeforeToday = (date) => {
@@ -106,7 +106,7 @@ router.post("/gostudent", (req, res, next) => {
                 req.session.name = user.name;
 
                 req.session.isStudent = true;
-                req.session.cookie.maxAge = 365 * 24 * 60 * 60 * 1000;
+                req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
                 // data = user
                 res.redirect("/")
             }
@@ -124,8 +124,14 @@ router.post("/gostudent", (req, res, next) => {
     })
 })
 
+router.post('/logout', async (req, res, next) => {
+    req.session.destroy((err) => {
+        res.redirect("/")
+    })
+})
+
 router.post("/", async function(req,res) {
-    const name = data?.name
+    const name = req.session.name
     const reason = req.body.reason
     const otherreason = req.body.other_reason
     const half = req.body.half_day || ""
@@ -133,8 +139,6 @@ router.post("/", async function(req,res) {
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
-    const date_1 = new Date(fdate_1);
-    const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -151,74 +155,58 @@ router.post("/", async function(req,res) {
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
     }
-    const alert = (send, icon, title, msg , data) => {
-        res.status(201).render("index", {
-            dataLists: data,
-            animate: false,
-            sendAlert : true,
-            icon: icon,
-            title: title,
-            msg: msg
-        });
+    const alert = (send, icon, title, msg) => {
+        Note.findOne({name: name}, async (err, user) => {
+            res.status(201).render("index", {
+                dataLists: user,
+                animate: false,
+                sendAlert : true,
+                icon: icon,
+                title: title,
+                msg: msg
+            });
+        })
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}\n(ทดสอบไม่ต้องตกใจ)`,
             })
         }
     }
     const freason = reasonDict[reason] || otherreason
-    const diff = getBusinessDatesCount(date_1, date_1);
-    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
+    const check_week = compareWeek(new Date(new Date().toUTCString({timeZone: "Asia/Bangkok"})), new Date(req.body.fdate))
     if (!name) {
         res.redirect("/")
     }
     else if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
-        alert(false, "error", "Empty Entry!" , error_msg, data)
+        alert(false, "error", "Empty Entry!" , error_msg)
     } 
     else if (diff == 0) {
         console.log("Weekend failed!")
         const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
-        alert(false, "error", "Date Error!" , error_msg, data)
+        alert(false, "error", "Date Error!" , error_msg)
     }
     else if (!check_week){
         console.log("Next week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
-        alert(false, "error", "Invalid Week!" , error_msg, data)
+        alert(false, "error", "Invalid Week!" , error_msg)
     }
     else if (isBeforeToday(new Date(req.body.fdate))) {
         console.log("Yesterday failed!")
         const error_msg = "คุณไม่สามารถเลือกวันที่จะลาเป็นวันที่เกิดขึ้นก่อนวันนี้ได้!"
-        alert(false, "error", "Invalid Date!" , error_msg, data)
+        alert(false, "error", "Invalid Date!" , error_msg)
     } else if (reasonDict[reason] == undefined && !otherreason){
         console.log("reason failed!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
-        alert(false, "error", "Empty Entry!" , error_msg, data)
+        alert(false, "error", "Empty Entry!" , error_msg)
     }
     else {
         Note.findOne({"name":name}, async function(err, result) {
             if (!result) {
-                let newNote = new Note({
-                    name: name,
-                    class_num: dic[name],
-                    total_days: diff,
-                    week_days: diff,
-                    allDates: THdate_1,
-                    weekDates: THdate_1,
-                    ndates: req.body.fdate,
-                    nweekDate: req.body.fdate,
-                    stats: "❌",
-                    reason: freason
-                })
-                await newNote.save();
-                alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
+                alert(true, "error", "NAME ERROR" , "กรุณาส่งให้ developer")
             } else {
-                if (result.class_num != dic[name]){
-                    Note.updateOne({name: name}, {$set: {class_num: dic[name]}}, async (err, su) => {
-                        if (err) return console.log(err)
-                    })
-                }
                 Note.findOne({"name":name}, function(err, result) {
                     console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
                     if (result.allDates?.includes(THdate_1)) {
@@ -230,7 +218,7 @@ router.post("/", async function(req,res) {
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
-                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย", data)
+                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
                         })
                     }
                 })
