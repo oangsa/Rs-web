@@ -26,7 +26,8 @@ let getBusinessDatesCount = (startDate, endDate) => {
 }
 
 router.get('/', isStudent, (req, res, next) => {
-    Note.findOne({name:req.session.name}, (err, data) => {
+  console.log(req.session.name)
+  Note.findOne({name:req.session.name}, (err, data) => {
         res.render("index", {
             dataLists: data
         })
@@ -126,6 +127,8 @@ router.post("/gostudent", (req, res, next) => {
 
 router.post("/", async function(req,res) {
     const name = req.session.name
+    const data = name
+    console.log(name)
     const reason = req.body.reason
     const otherreason = req.body.other_reason
     const half = req.body.half_day || ""
@@ -152,14 +155,16 @@ router.post("/", async function(req,res) {
         "personal_activity":`กิจกรรม (${r})`,
     }
     const alert = (send, icon, title, msg , data) => {
-        res.status(201).render("index", {
-            dataLists: data,
+        Note.fineOne({name: data}, async (err, user) => {
+          res.status(201).render("index", {
+            dataList: user,
             animate: false,
-            sendAlert : true,
+            sendAlert: true,
             icon: icon,
             title: title,
             msg: msg
-        });
+          });
+        })
         if (send){
             lineNotify.notify({
             message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,

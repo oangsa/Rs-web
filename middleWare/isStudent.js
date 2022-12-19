@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
     // }
 
     // return next();
-
+    console.log(req.session.isStudent)
     if(req.session.isStudent) {
         return next();
     } else {
