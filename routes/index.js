@@ -125,7 +125,7 @@ router.post("/gostudent", (req, res, next) => {
 })
 
 router.post("/", async function(req,res) {
-    const name = data?.name
+    const name = req.session.name
     const reason = req.body.reason
     const otherreason = req.body.other_reason
     const half = req.body.half_day || ""
