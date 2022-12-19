@@ -4,7 +4,6 @@ let compareWeek = require('compare-week');
 let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 let devNote = require("../libs/devDB")
 const devVersion = "3.0.0";
-var data;
 
 const isDev = require("../middleWare/isDev")
 
