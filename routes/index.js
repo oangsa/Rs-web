@@ -46,7 +46,7 @@ cron.schedule('0 10 8 * * *', () => {
 });
 
 router.get('/', isStudent, (req, res, next) => {
-    Note.findOne({studentId: req.session.id}, (err, data) => {
+    Note.findOne({studentId: req.session.Sid}, async (err, data) => {
         res.render("index", {
             dataLists: data
         })
@@ -124,7 +124,7 @@ router.post("/gostudent", (req, res, next) => {
             if (name === user.name.split(" ")[0] && pass === user.studentId){
 
                 req.session.name = user.name;
-                req.session.id = user.studentId;
+                req.session.Sid = user.studentId;
                 req.session.isStudent = true;
                 req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
                 res.redirect("/")
@@ -229,18 +229,18 @@ router.post("/", async function(req,res) {
         alert(false, "error", "Time Error!" , error_msg)
     }
     else {
-        Note.findOne({studentId: req.session.id}, async function(err, result) {
+        Note.findOne({studentId: req.session.Sid}, async function(err, result) {
             if (!result) {
                 alert(true, "error", "Name Error!" , "WTF this is an impossible error.\nกรุณาส่งให้ developer")
             } else {
-                Note.findOne({studentId: req.session.id}, function(err, result) {
+                Note.findOne({studentId: req.session.Sid}, function(err, result) {
                     console.log(`Pass ${result.allDates?.includes(THdate_1)}`)
                     if (result.allDates?.includes(THdate_1)) {
                         console.log("Date Failed!")
                         const error_msg = "คุณได้ทำการลาในวันดังกล่าวไปแล้ว!"
                         alert(false, "error", "Same Date!" , error_msg)
                     } else {
-                        Note.updateOne({studentId: req.session.id},
+                        Note.updateOne({studentId: req.session.Sid},
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
