@@ -29,7 +29,7 @@ let getBusinessDatesCount = (startDate, endDate) => {
     return count;
 }
 
-cron.schedule('00 30 23 * * *', () => {
+cron.schedule('00 55 23 * * *', () => {
     const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
     const array = [];
     var i = 0;
