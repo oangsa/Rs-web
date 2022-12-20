@@ -41,8 +41,8 @@ cron.schedule('00 55 23 * * *', () => {
                 array.push(`${element.name} #${element.class_num}`)
             }
         });
+        DevNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${devVersion}`})
     }).sort("class_num")
-    DevNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${devVersion}`})
   }, {
     scheduled: true,
     timezone: "Asia/Bangkok"
