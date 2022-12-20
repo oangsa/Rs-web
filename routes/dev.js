@@ -120,9 +120,9 @@ router.post("/devsend", isDev, async function(req, res) {
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
     }
-    console.log(new Date(req.body.fdate) , new Date(req.body.fdate).getTime(), new Date(req.body.fdate).setHours(8, 0, 0))
-    console.log(new Date(req.body.fdate) > new Date(req.body.fdate).setHours(8, 0, 0))
-    console.log(t.isAfter(tz.set({hour:21,minute:0,second:0,millisecond:0})))
+    // console.log(new Date(req.body.fdate) , new Date(req.body.fdate).getTime(), new Date(req.body.fdate).setHours(8, 0, 0))
+    // console.log(new Date(req.body.fdate) > new Date(req.body.fdate).setHours(8, 0, 0))
+    console.log("CHECK TIME:",t.isAfter(tz.set({hour:23,minute:0,second:0,millisecond:0})))
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate).setHours(0,0,0))
