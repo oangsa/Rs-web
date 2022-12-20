@@ -2,10 +2,11 @@ let express = require('express');
 let router = express.Router();
 let compareWeek = require('compare-week');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
-let isStudent = require("../middleWare/isStudent")
-const releaseVersion = "2.5.1";
+let isStudent = require("../middleWare/isStudent");
+const releaseVersion = "2.5.2";
 const Note = require("../libs/db");
-const cron = require("node-cron")
+const cron = require("node-cron");
+const moment = require("moment-timezone");
 
 let isBeforeToday = (date) => {
     const today = new Date();
@@ -160,6 +161,8 @@ router.post("/", async function(req,res) {
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
+    const tz = moment().tz("Asia/Bangkok");
+    const t = moment().tz("Asia/Bangkok");
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -196,6 +199,7 @@ router.post("/", async function(req,res) {
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
     if (!name) {
         res.redirect("/")
     }
@@ -224,7 +228,7 @@ router.post("/", async function(req,res) {
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
         alert(false, "error", "Empty Entry!" , error_msg)
     } 
-    else if ( new Date(dtt) > new Date(dtt).setHours(8, 0, 0) ) {
+    else if ( t.isAfter(tz.set({hour:8,minute:0,second:0,millisecond:0})) ) {
         console.log("time failed!")
         const error_msg = "ไม่สามารถลาได้ช้ากว่า 8.00 น."
         alert(false, "error", "Time Error!" , error_msg)

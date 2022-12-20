@@ -101,9 +101,8 @@ router.post("/devsend", isDev, async function(req, res) {
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
     const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
-    const t = moment().tz("Asia/Bangkok");
     const tz = moment().tz("Asia/Bangkok");
-    //{timeZone: "Asia/Bangkok"}
+    const t = moment().tz("Asia/Bangkok");
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -125,7 +124,7 @@ router.post("/devsend", isDev, async function(req, res) {
     // console.log(`CHECK WEEK:${t.isAfter(tz.set({hour:23,minute:0,second:0,millisecond:0}))}`)
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
-    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate).setHours(0,0,0))
+    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     const alert = (send, icon, title, msg) => {
         devNote.findOne({studentId: req.session.devId}, async (err, user) => {
             res.status(201).render("dev", {
@@ -143,7 +142,7 @@ router.post("/devsend", isDev, async function(req, res) {
             })
         }
     }
-    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
+    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isAfter(tz.set({hour:8,minute:0,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
