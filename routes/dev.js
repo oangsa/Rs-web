@@ -143,7 +143,7 @@ router.post("/devsend", isDev, async function(req, res) {
             })
         }
     }
-    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:12,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
+    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
