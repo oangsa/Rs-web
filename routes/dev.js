@@ -138,7 +138,7 @@ router.post("/devsend", isDev, async function(req, res) {
             })
         }
     }
-    console.log(`${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(req.body.fdate)}\ndtt: ${dtt}`)
+    console.log(`${check_week}\nD1: ${new Date(new Date(dtt).getTime() + (-420 * 1000))}\nD2: ${new Date(new Date(req.body.fdate).getTime() + (-420 * 1000))}\ndtt: ${dtt}`)
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
