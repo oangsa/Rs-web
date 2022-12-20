@@ -4,6 +4,7 @@ let compareWeek = require('compare-week');
 let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 let devNote = require("../libs/devDB")
 let Note = require("../libs/db")
+const moment = require("moment-timezone");
 const cron = require("node-cron")
 const devVersion = "3.0.0";
 
@@ -99,7 +100,10 @@ router.post("/devsend", isDev, async function(req, res) {
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
     const date_1 = new Date(fdate_1);
-    const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
+    const dtt = new Date().toISOString({timeZone: "Asia/Bangkok"})
+    const t = moment().tz("Asia/Bangkok");
+    const tz = moment().tz("Asia/Bangkok");
+    //{timeZone: "Asia/Bangkok"}
     var r = otherreason
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
@@ -118,9 +122,10 @@ router.post("/devsend", isDev, async function(req, res) {
     }
     console.log(new Date(req.body.fdate) , new Date(req.body.fdate).getTime(), new Date(req.body.fdate).setHours(8, 0, 0))
     console.log(new Date(req.body.fdate) > new Date(req.body.fdate).setHours(8, 0, 0))
+    console.log(t.isAfter(tz.set({hour:21,minute:0,second:0,millisecond:0})))
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
-    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate).setHours(0,0,0))
     const alert = (send, icon, title, msg) => {
         devNote.findOne({studentId: req.session.devId}, async (err, user) => {
             res.status(201).render("dev", {
@@ -138,7 +143,7 @@ router.post("/devsend", isDev, async function(req, res) {
             })
         }
     }
-    console.log(`${check_week}\nD1: ${new Date(new Date(dtt).getTime() + (-420 * 1000))}\nD2: ${new Date(new Date(req.body.fdate).getTime() + (-420 * 1000))}\ndtt: ${dtt}`)
+    console.log(`${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
