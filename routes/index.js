@@ -47,6 +47,7 @@ cron.schedule('0 10 8 * * *', () => {
 
 router.get('/', isStudent, (req, res, next) => {
     Note.findOne({studentId: req.session.Sid}, async (err, data) => {
+        console.log(data)
         res.render("index", {
             dataLists: data
         })
@@ -122,7 +123,7 @@ router.post("/gostudent", (req, res, next) => {
             })
         } else {
             if (name === user.name.split(" ")[0] && pass === user.studentId){
-
+                console.log(user.studentId)
                 req.session.name = user.name;
                 req.session.Sid = user.studentId;
                 req.session.isStudent = true;
