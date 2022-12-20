@@ -116,6 +116,7 @@ router.post("/devsend", isDev, async function(req, res) {
         "parent_activity":"ลากิจ (ไปธุระกับผปค./ อื่นๆ)",
         "personal_activity":`กิจกรรม (${r})`,
     }
+    console.log(new Date(dtt), new Date(dtt).setHours(8, 0, 0))
     console.log(new Date(dtt) > new Date(dtt).setHours(8, 0, 0))
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);

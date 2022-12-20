@@ -38,7 +38,7 @@ cron.schedule('0 10 8 * * *', () => {
                 array.push(`${element.name} #${element.class_num}`)
             }
         });
-        lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${devVersion}`})
+        lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${releaseVersion}`})
     }).sort("class_num")
   }, {
     scheduled: true,
@@ -189,7 +189,7 @@ router.post("/", async function(req,res) {
         })
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}\n(ทดสอบไม่ต้องตกใจ)`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,
             })
         }
     }
