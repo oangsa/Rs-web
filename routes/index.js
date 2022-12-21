@@ -39,7 +39,7 @@ cron.schedule('0 10 8 * * *', () => {
                 array.push(`${element.name} #${element.class_num}`)
             }
         });
-        lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: DEV ${releaseVersion}`})
+        lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: Release ${releaseVersion}`})
     }).sort("class_num")
   }, {
     scheduled: true,
