@@ -167,7 +167,7 @@ router.post("/devsend", isDev, async function(req, res) {
         const error_msg = "กรุณากรอกข้อมูลให้ครบ"
         alert(false, "error", "Empty Entry!" , error_msg)
     }
-    else if ( new Date(dtt) > new Date(dtt).setHours(8, 0, 0) ) {
+    else if ( t.isAfter(tz.set({hour:8,minute:0,second:0,millisecond:0})) ) {
         console.log("time failed!")
         const error_msg = "ไม่สามารถลาได้ช้ากว่า 8.00 น."
         alert(false, "error", "Time Error!" , error_msg)
