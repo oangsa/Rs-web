@@ -6,7 +6,7 @@ let devNote = require("../libs/devDB")
 let Note = require("../libs/db")
 const moment = require("moment-timezone");
 const cron = require("node-cron")
-const devVersion = "3.0.0";
+const devVersion = "3.5.5";
 
 const isDev = require("../middleWare/isDev")
 
@@ -29,18 +29,16 @@ let getBusinessDatesCount = (startDate, endDate) => {
     return count;
 }
 const compareWeeks = (week) => {
-    // Get the current week in the same format
     const currentWeek = moment().tz("Asia/Bangkok").format("YYYY-WW");
   
     console.log(currentWeek)
     
-    // Compare the current week to the given week
     if (currentWeek > week || currentWeek < week) {
       return 1;
     } else {
       return 0;
     }
-  }
+}
 
 cron.schedule('00 55 23 * * *', () => {
     const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})

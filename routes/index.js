@@ -3,7 +3,7 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 let isStudent = require("../middleWare/isStudent");
-const releaseVersion = "2.5.2";
+const releaseVersion = "2.5.3";
 const Note = require("../libs/db");
 const cron = require("node-cron");
 const moment = require("moment-timezone");
@@ -25,6 +25,18 @@ let getBusinessDatesCount = (startDate, endDate) => {
       curDate = curDate + 24 * 60 * 60 * 1000
     }
     return count;
+}
+
+const compareWeeks = (week) => {
+    const currentWeek = moment().tz("Asia/Bangkok").format("YYYY-WW");
+  
+    console.log(currentWeek)
+    
+    if (currentWeek > week || currentWeek < week) {
+      return 1;
+    } else {
+      return 0;
+    }
 }
 
 cron.schedule('0 10 8 * * *', () => {
@@ -199,6 +211,7 @@ router.post("/", async function(req,res) {
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    const result = compareWeeks(moment(req.body.fdate).tz("Asia/Bangkok").format("YYYY-WW"));
     console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
     if (!name) {
         res.redirect("/")
@@ -213,7 +226,7 @@ router.post("/", async function(req,res) {
         const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
         alert(false, "error", "Date Error!" , error_msg)
     }
-    else if (!check_week){
+    else if (result){
         console.log("Next week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
         alert(false, "error", "Invalid Week!" , error_msg)
