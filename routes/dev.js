@@ -121,7 +121,7 @@ router.post("/devsend", isDev, async function(req, res) {
     }
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
-    const check_week = compareWeek(new Date(tz), new Date(req.body.fdate))
+    const check_week = compareWeek(new Date(new Date().toUTCString({timeZone: "Asia/Bangkok"})), new Date(req.body.fdate))
     const alert = (send, icon, title, msg) => {
         devNote.findOne({studentId: req.session.devId}, async (err, user) => {
             res.status(201).render("dev", {
