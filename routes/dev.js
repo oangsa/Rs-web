@@ -151,7 +151,7 @@ router.post("/devsend", isDev, async function(req, res) {
         alert(false, "error", "Date Error!" , error_msg)
     }
     else if (!check_week){
-        console.log("Next week failed!")
+        console.log("Check Week: " + check_week + "\nNext week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
         alert(false, "error", "Invalid Week!" , error_msg)
     }
