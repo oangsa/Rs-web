@@ -28,6 +28,19 @@ let getBusinessDatesCount = (startDate, endDate) => {
     }
     return count;
 }
+const compareWeeks = (week) => {
+    // Get the current week in the same format
+    const currentWeek = moment().tz("Asia/Bangkok").format("YYYY-WW");
+  
+    console.log(currentWeek)
+    
+    // Compare the current week to the given week
+    if (currentWeek > week || currentWeek < week) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
 cron.schedule('00 55 23 * * *', () => {
     const date = new Date().toLocaleDateString('th-TH', {timeZone: "Asia/Bangkok"})
@@ -122,6 +135,7 @@ router.post("/devsend", isDev, async function(req, res) {
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(date_1, date_1);
     const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    const result = compareWeeks(moment(req.body.fdate).tz("Asia/Bangkok").format("YYYY-WW"));
     const alert = (send, icon, title, msg) => {
         devNote.findOne({studentId: req.session.devId}, async (err, user) => {
             res.status(201).render("dev", {
@@ -150,8 +164,8 @@ router.post("/devsend", isDev, async function(req, res) {
         const error_msg = "คุณไม่สามารถลาในวันหยุดได้(weekend)!"
         alert(false, "error", "Date Error!" , error_msg)
     }
-    else if (!check_week){
-        console.log("Check Week: " + check_week + "\nNext week failed!")
+    else if (result){
+        console.log("Check Week: " + result + "\nNext week failed!")
         const error_msg = "คุณไม่สามารถลาในสัปดาห์ถัดไปได้!"
         alert(false, "error", "Invalid Week!" , error_msg)
     }
