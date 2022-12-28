@@ -3,7 +3,7 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 let isStudent = require("../middleWare/isStudent");
-const releaseVersion = "2.5.3";
+const releaseVersion = "2.5.4";
 const Note = require("../libs/db");
 const cron = require("node-cron");
 const moment = require("moment-timezone");
@@ -172,7 +172,6 @@ router.post("/", async function(req,res) {
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
-    const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
     const tz = moment().tz("Asia/Bangkok");
     const t = moment().tz("Asia/Bangkok");
     var r = otherreason
@@ -204,15 +203,14 @@ router.post("/", async function(req,res) {
         })
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}\n*ขอให้สนุกกับวันหยุด และสุขสันต์วันปีใหม่นะ :)*`,
             })
         }
     }
     const freason = reasonDict[reason] || otherreason
     const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
-    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
     const result = compareWeeks(moment(req.body.fdate).tz("Asia/Bangkok").format("YYYY-WW"));
-    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}`)
+    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isBefore(tz.set({hour:23,minute:20,second:0,millisecond:0}))}`)
     if (!name) {
         res.redirect("/")
     }
@@ -262,7 +260,7 @@ router.post("/", async function(req,res) {
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
-                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
+                            } else return alert(true, "success", "สำเร็จ" , "Enjoy your holiday guys :)")
                         })
                     }
                 })

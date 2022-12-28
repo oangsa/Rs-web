@@ -1,6 +1,5 @@
 let express = require('express');
 let router = express.Router();
-let compareWeek = require('compare-week');
 let DevNotify = require('line-notify-nodejs')('pjLFmKaRFgJrgeO0WjGbqmloRIXpcj2VwdJQttDoCYr');
 let devNote = require("../libs/devDB")
 let Note = require("../libs/db")
@@ -110,8 +109,6 @@ router.post("/devsend", isDev, async function(req, res) {
     const d = new Date(req.body.fdate).toLocaleDateString('TH-th', options)
     const fdate_1 = new Date(req.body.fdate).toLocaleDateString('en-US');
     const THdate_1 = new Date(req.body.fdate).toLocaleDateString('TH-th');
-    const date_1 = new Date(fdate_1);
-    const dtt = new Date().toUTCString({timeZone: "Asia/Bangkok"})
     const tz = moment().tz("Asia/Bangkok");
     const t = moment().tz("Asia/Bangkok");
     var r = otherreason
@@ -131,8 +128,7 @@ router.post("/devsend", isDev, async function(req, res) {
         "personal_activity":`กิจกรรม (${r})`,
     }
     const freason = reasonDict[reason] || otherreason
-    const diff = getBusinessDatesCount(date_1, date_1);
-    const check_week = compareWeek(new Date(dtt), new Date(req.body.fdate))
+    const diff = getBusinessDatesCount(new Date(fdate_1), new Date(fdate_1));
     const result = compareWeeks(moment(req.body.fdate).tz("Asia/Bangkok").format("YYYY-WW"));
     const alert = (send, icon, title, msg) => {
         devNote.findOne({studentId: req.session.devId}, async (err, user) => {
@@ -151,7 +147,7 @@ router.post("/devsend", isDev, async function(req, res) {
             })
         }
     }
-    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isAfter(tz.set({hour:8,minute:0,second:0,millisecond:0}))}\n${check_week}\nD1: ${new Date(dtt)}\nD2: ${new Date(new Date(req.body.fdate))}\ndtt: ${dtt}\nMoment: ${moment(req.body.fdate).tz("Asia/Bangkok")}`)
+    console.log(`t: ${t}\ntzset: ${tz.set({hour:8,minute:0,second:0,millisecond:0})}\nCHECK TIME: ${t.isAfter(tz.set({hour:8,minute:0,second:0,millisecond:0}))}\nMoment: ${moment(req.body.fdate).tz("Asia/Bangkok")}`)
     if (name == "" || !reason || d == "Invalid Date"){
         console.log("Empty Entry Error!")
         const error_msg = "กรุณากรอกข้อมูลให้ครบ!"
@@ -197,7 +193,7 @@ router.post("/devsend", isDev, async function(req, res) {
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
-                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลเรียบร้อย")
+                            } else return alert(true, "success", "สำเร็จ" , "Enjoy your holiday guys :)")
                         })
                     }
                 })
