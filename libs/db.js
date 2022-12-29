@@ -5,6 +5,7 @@ const notesSchema = {
     name: String,
     studentId: String,
     class_num: String,
+    class: String,
     total_days: Number,
     week_days: Number,
     allDates: Array,

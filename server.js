@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const flash = require("express-flash");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const path = require("path");

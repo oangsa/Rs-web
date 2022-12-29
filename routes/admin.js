@@ -44,6 +44,7 @@ router.get("/add", isAuth, (req, res, next) => {
         name: "",
         number: "",
         studentId: "",
+        studentClass: "",
     })
 })
 
@@ -51,13 +52,15 @@ router.post('/add', async (req, res, next) => {
     let name = req.body.name;
     let number = req.body.number;
     let id = req.body.studentId;
+    let studentClass = req.body.class;
     console.log(id.length)
-    let Alert = (send, name, number, icon, title, msg) => {
+    let Alert = (send, icon, title, msg) => {
         res.status(201).render("admin/add", {
             sendAlert : send,
             name: "",
             number: "",
             studentId:"",
+            studentClass:"",
             icon: icon,
             title: title,
             msg: msg
@@ -81,6 +84,7 @@ router.post('/add', async (req, res, next) => {
                         name: name,
                         studentId: id,
                         class_num: number,
+                        class: studentClass,
                         total_days: 0,
                         week_days: 0,
                         allDates: {},
@@ -91,9 +95,9 @@ router.post('/add', async (req, res, next) => {
                         reason: ""
                     })
                     await newNote.save();
-                    Alert(true, name, number, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว");
+                    Alert(true, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว");
                 } else {
-                    Alert(true, name, number, "error", "ไม่สำเร็จ", "เลขที่/ ชื่อดังกล่าวมีแล้ว");
+                    Alert(true, "error", "ไม่สำเร็จ", "เลขที่/ ชื่อดังกล่าวมีแล้ว");
                 }
             })
         })    
@@ -103,7 +107,7 @@ router.post('/add', async (req, res, next) => {
 router.get("/edit/(:id)",isAuth, async (req, res, next) => {
     let id = req.params.id;
 
-    Note.findOne({class_num: id}, async function(err, user){
+    Note.findOne({studentId: id}, async function(err, user){
         if (!user) {
             res.redirect("/admin")
         } else {
@@ -111,7 +115,8 @@ router.get("/edit/(:id)",isAuth, async (req, res, next) => {
             res.render("admin/edit", {
                 name: user.name,
                 number: user.class_num,
-                studentId: user?.id
+                studentId: user.studentId || "",
+                studentClass: user.class || "",
             });
         }
     })
@@ -122,13 +127,15 @@ router.post("/edit/:id", async (req, res, next) => {
     let name = req.body.name;
     let number = req.body.number;
     let studentId = req.body.id;
+    let studentClass = req.body.class;
     console.log(studentId)
 
-    let Alert = (send, name, studentId, number, icon, title, msg, id) => {
+    let Alert = (send, name, studentId, studentClass, number, icon, title, msg, id) => {
         res.status(201).render("admin/edit", {
             sendAlert : send,
             name: name,
             studentId: studentId,
+            studentClass: studentClass,
             number: number,
             icon: icon,
             title: title,
@@ -146,13 +153,13 @@ router.post("/edit/:id", async (req, res, next) => {
                 msg: "หาคนนี้ไม่เจอแล้ว ??"
             })
         } else {
-            if (name === "" || number === "") {
+            if (name === "" || number === "" || studentClass === "" || studentId === "") {
                 console.log("TEST")
-                Alert(true, user?.name, user?.studentId, user?.class_num, "error", "ไม่สำเร็จ", "กรุณากรอกข้อมูลด้วย", id)
+                Alert(true, user?.name, user?.studentId, user?.class, user?.class_num, "error", "ไม่สำเร็จ", "กรุณากรอกข้อมูลด้วย", id)
             } else {
-                Note.updateOne({class_num: id}, {$set: {class_num: number, name: name, studentId: studentId}}, async (err, su) => {
+                Note.updateOne({class_num: id}, {$set: {class_num: number, name: name, studentId: studentId, class: studentClass}}, async (err, su) => {
                     if (err) return console.log(err)
-                    else return Alert(true, name, studentId, number, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว", id)
+                    else return Alert(true, name, studentId, studentClass, number, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว", id)
                 })
             }
         }
@@ -173,7 +180,7 @@ router.get("/remove/(:id)",isAuth, async (req, res, next) => {
         })
     }
 
-    Note.deleteOne({class_num: id}, async (err, user) => {
+    Note.deleteOne({studentId: id}, async (err, user) => {
         if (err) return console.log(err)
         else return Alert(true, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว")
     })

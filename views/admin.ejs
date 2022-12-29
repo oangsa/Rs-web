@@ -40,6 +40,7 @@
                 <table class="table table-striped" id="myTable">
                     <thead>
                         <tr>
+                            <th scope="col">ห้อง</th>
                             <th scope="col">เลขประจำตัวนักเรียน</th>
                             <th scope="col">เลขที่</th>
                             <th scope="col">ชื่อ-นามสกุล</th>
@@ -49,12 +50,13 @@
                     <tbody>
                         <%data.forEach(user => {%>
                             <tr>
-                                <th scope="row"><%= user.studentId %></th>
+                                <th scope="row"><%= user.class %></th>
+                                <td><%= user.studentId %></td>
                                 <td><%= user.class_num %></td>
                                 <td><%= user.name %></td>
                                 <td>
-                                    <a href="admin/edit/<%= user.class_num %>" class="btn btn-success edit">Edit</a>
-                                    <a href="admin/remove/<%= user.class_num %>" onclick="return alert('Are you sure?')" class="btn btn-danger edit" id="del">Delete</a>
+                                    <a href="admin/edit/<%= user.studentId %>" class="btn btn-success edit">Edit</a>
+                                    <a href="admin/remove/<%= user.studentId %>" onclick="return alert('Are you sure?')" class="btn btn-danger edit" id="del">Delete</a>
                                 </td>
                             </tr>
                         <%})%>

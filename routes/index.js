@@ -3,7 +3,7 @@ let router = express.Router();
 let compareWeek = require('compare-week');
 let lineNotify = require('line-notify-nodejs')('UA5YDrPULtLGGhlR5WR9XzTykGPJD6e7UUiyGOwAc6F');
 let isStudent = require("../middleWare/isStudent");
-const releaseVersion = "2.5.4";
+const releaseVersion = "2.5.5";
 const Note = require("../libs/db");
 const cron = require("node-cron");
 const moment = require("moment-timezone");
@@ -203,7 +203,7 @@ router.post("/", async function(req,res) {
         })
         if (send){
             lineNotify.notify({
-            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}\n*ขอให้สนุกกับวันหยุด และสุขสันต์วันปีใหม่นะ :)*`,
+            message: `\nชื่อ: ${name}\nลาวันที่: ${day}\nเนื่องจาก: ${freason}\n\nVersion: release ${releaseVersion}`,
             })
         }
     }
@@ -260,7 +260,7 @@ router.post("/", async function(req,res) {
                         {total_days:(result["total_days"] + diff),week_days:(diff + result["week_days"]) , $push: { "allDates": THdate_1, "weekDates": THdate_1 , "ndates": req.body.fdate,"nweekDate": req.body.fdate }, $set: {"reason": freason}}, function(err, result){
                             if (err){
                                 console.log(err)
-                            } else return alert(true, "success", "สำเร็จ" , "Enjoy your holiday guys :)")
+                            } else return alert(true, "success", "สำเร็จ" , "ระบบบันทึกข้อมูลสำเร็จ")
                         })
                     }
                 })
