@@ -40,8 +40,8 @@
                 <table class="table table-striped" id="myTable">
                     <thead>
                         <tr>
-                            <th scope="col">ห้อง</th>
                             <th scope="col">เลขประจำตัวนักเรียน</th>
+                            <th scope="col">ห้อง</th>
                             <th scope="col">เลขที่</th>
                             <th scope="col">ชื่อ-นามสกุล</th>
                             <th scope="200px">Action</th>
@@ -50,8 +50,8 @@
                     <tbody>
                         <%data.forEach(user => {%>
                             <tr>
-                                <th scope="row"><%= user.class %></th>
-                                <td><%= user.studentId %></td>
+                                <th scope="row"><%= user.studentId %></th>
+                                <td><%= user.class %></td>
                                 <td><%= user.class_num %></td>
                                 <td><%= user.name %></td>
                                 <td>

@@ -77,29 +77,26 @@ router.post('/add', async (req, res, next) => {
         Alert(true, name, number, "error", "ไม่สำเร็จ", "กรุณากรอกเลขประจำตัวนักเรียนให้ถูกต้อง");
     } 
     else {
-        Note.findOne({class_num: number}, async function(err, user){
-            Note.findOne({name: name}, async function(err, ur){
-                if (!user && !ur) {
-                    let newNote = new Note({
-                        name: name,
-                        studentId: id,
-                        class_num: number,
-                        class: studentClass,
-                        total_days: 0,
-                        week_days: 0,
-                        allDates: {},
-                        weekDates: {},
-                        ndates: {},
-                        nweekDate: {},
-                        stats: "✅",
-                        reason: ""
-                    })
-                    await newNote.save();
-                    Alert(true, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว");
-                } else {
-                    Alert(true, "error", "ไม่สำเร็จ", "เลขที่/ ชื่อดังกล่าวมีแล้ว");
-                }
-            })
+        Note.findOne({class_num: number, name: name, class: studentClass, studentId: id}, async function(err, user){
+            if (!user){
+                let newNote = new Note({
+                    name: name,
+                    studentId: id,
+                    class_num: number,
+                    class: studentClass,
+                    total_days: 0,
+                    week_days: 0,
+                    allDates: {},
+                    weekDates: {},
+                    ndates: {},
+                    nweekDate: {},
+                    stats: "✅",
+                    reason: ""
+                })
+                await newNote.save();
+                Alert(true, "success", "สำเร็จ", "ระบบบันทึกข้อมูลแล้ว");
+            }
+            else return Alert(true, "error", "ไม่สำเร็จ", "มีนักเรียนคนดังกล่าวในระบบแล้ว");
         })    
     }
 })
