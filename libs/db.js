@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const dbURL = "mongodb+srv://oangsa:oangsa58528@cluster0.q9lfhle.mongodb.net/?retryWrites=true&w=majority";
 const prodDB = mongoose.createConnection(dbURL);
+
 const notesSchema = {
     name: String,
     studentId: String,
@@ -15,7 +16,7 @@ const notesSchema = {
     stats: String,
     reason: String
 }
-const Note = prodDB.model("RS", notesSchema);
 
+const Note = prodDB.model("RS", notesSchema);
 
 module.exports = Note

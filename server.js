@@ -23,6 +23,7 @@ const store = new MongoDBsession({
     uri: "mongodb+srv://oangsa:oangsa58528@dev.x91artd.mongodb.net/?retryWrites=true&w=majority",
     collection: "session"
 })
+
 app.use(session({
     cookie: { maxAge: 60000 },
     saveUninitialized: false,
@@ -51,3 +52,5 @@ app.use("/", (req, res) => {
 app.listen(PORT , function() {
     console.log(`Server is running on port ${PORT}`)
 })
+
+module.exports = app;

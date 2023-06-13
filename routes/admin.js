@@ -166,7 +166,7 @@ router.post("/edit/:id", async (req, res, next) => {
 router.get("/remove/(:id)",isAuth, async (req, res, next) => {
     let id = req.params.id
 
-    let Alert = (send, icon, title, msg) => {
+    const Alert = (send, icon, title, msg) => {
         Note.find({}, async function(err, user){
             if (err) {
                 res.render('admin', {data: ""});

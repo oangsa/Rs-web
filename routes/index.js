@@ -53,7 +53,7 @@ cron.schedule('0 10 8 * * *', () => {
         });
         lineNotify.notify({message: `\nลาทั้งหมด: ${i} คน\n\n${array.join("\n")}\n\nVersion: Release ${releaseVersion}`})
     }).sort("class_num")
-  }, {
+    }, {
     scheduled: true,
     timezone: "Asia/Bangkok"
 });
@@ -122,39 +122,53 @@ router.post("/rs-really-trash", function(req,res){
     res.redirect("https://youtu.be/dQw4w9WgXcQ")
 })
 
-router.post("/gostudent", (req, res, next) => {
+router.post("/gostudent", async (req, res, next) => {
     let { name, pass } = req.body;
-    Note.findOne({studentId:pass}, async (err, user) => {
-        if(!user) {
-            res.render("logStudent", {
-                sendAlert: true,
-                icon: "error",
-                title: "ไม่สำเร็จ",
-                msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",
-                name: name,
-                pass: ""
-            })
-        } else {
-            if (name === user.name.split(" ")[0] && pass === user.studentId){
-                console.log(user.studentId)
-                req.session.name = user.name;
-                req.session.Sid = user.studentId;
-                req.session.isStudent = true;
-                req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
-                res.redirect("/")
-            }
-            else {
-                res.render("logStudent", {
-                    sendAlert: true,
-                    icon: "error",
-                    title: "ไม่สำเร็จ",
-                    msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",
-                    name: name,
-                    pass: ""
-                })
-            }
-        }
-    })
+    
+    const user = await Note.findOne({studentId:pass})
+
+    if (!user) return res.render("logStudent", { sendAlert: true, icon: "error", title: "ไม่สำเร็จ", msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",  name: name, pass: "" })
+
+    if (name !== user.name.split(" ")[0] && pass !== user.studentId) return res.render("logStudent", { sendAlert: true, icon: "error", title: "ไม่สำเร็จ", msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",  name: name, pass: "" })
+    
+    console.log(user.studentId)
+    req.session.name = user.name;
+    req.session.Sid = user.studentId;
+    req.session.isStudent = true;
+    req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
+    res.redirect("/")
+
+    // Note.findOne({studentId:pass}, async (err, user) => {
+    //     if(!user) {
+    //         res.render("logStudent", {
+    //             sendAlert: true,
+    //             icon: "error",
+    //             title: "ไม่สำเร็จ",
+    //             msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",
+    //             name: name,
+    //             pass: ""
+    //         })
+    //     } else {
+    //         if (name === user.name.split(" ")[0] && pass === user.studentId){
+    //             console.log(user.studentId)
+    //             req.session.name = user.name;
+    //             req.session.Sid = user.studentId;
+    //             req.session.isStudent = true;
+    //             req.session.cookie.maxAge = 10 * 24 * 60 * 60 * 1000;
+    //             res.redirect("/")
+    //         }
+    //         else {
+    //             res.render("logStudent", {
+    //                 sendAlert: true,
+    //                 icon: "error",
+    //                 title: "ไม่สำเร็จ",
+    //                 msg: "ไม่พบผู้ใช้งาน/ รหัสผ่านผิด",
+    //                 name: name,
+    //                 pass: ""
+    //             })
+    //         }
+    //     }
+    // })
 })
 
 router.post('/logout', async (req, res, next) => {
@@ -178,7 +192,7 @@ router.post("/", async function(req,res) {
     if (half == "ทั้งวัน" || half == ""){
         var day = `${d}`
     } else {
-        var day = `${d}${half}`
+        var day = `${d}(${half})`
     }
     if (reason == "personal_activity" && !otherreason){
         var r = "รด."
